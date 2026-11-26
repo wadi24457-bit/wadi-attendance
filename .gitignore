@@ -1,0 +1,4 @@
+*.keystore
+*.jks
+signing-key-info.txt
+.env

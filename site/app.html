@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<!--build:9-->
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>حضور وانصراف | محمد وادي</title>
+<style>
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+html, body { margin: 0; padding: 0; min-height: 100%; }
+body {
+  font-family: system-ui, 'Segoe UI', 'Noto Kufi Arabic', sans-serif;
+  background: #f4f4f8;
+  color: #1c1b22;
+  padding: 16px 14px 40px;
+}
+.card { max-width: 720px; margin: 0 auto; }
+.hero {
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  border-radius: 14px; color: #fff; padding: 10px 16px; margin-bottom: 12px;
+  box-shadow: 0 6px 18px rgba(99,102,241,.28);
+}
+.hero h1 { margin: 0 0 2px; font-size: 16.5px; }
+.hero .date { font-size: 12px; opacity: .92; font-weight: 600; }
+.hero .intro { font-size: 12px; opacity: .88; margin: 4px 0 0; line-height: 1.6; }
+.group { background: #fff; border-radius: 18px; padding: 16px; margin-bottom: 14px; box-shadow: 0 2px 8px rgba(20,20,40,.06); }
+.group-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 10px; flex-wrap: wrap; }
+.group-head h2 { margin: 0; font-size: 16.5px; display: flex; align-items: center; gap: 8px; }
+.group-head h2 svg { color: #6366f1; }
+.pill { font-size: 12.5px; font-weight: 600; color: #4f46e5; background: #eef2ff; border-radius: 999px; padding: 3px 12px; }
+.hint { font-size: 13.5px; color: #6b6a75; line-height: 1.7; margin: 6px 0; }
+.add-row { display: flex; align-items: stretch; gap: 10px; flex-wrap: wrap; margin-bottom: 6px; }
+.add-row input {
+  flex: 1 1 180px; border: 1.5px solid #e2e1ea; border-radius: 12px; padding: 10px 14px;
+  font: inherit; font-size: 15px; background: #fafafc; min-height: 44px;
+}
+.add-row input:focus { outline: none; border-color: #8b5cf6; background: #fff; }
+.row { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 0; border-bottom: 1px solid #efedf3; flex-wrap: wrap; }
+.row:last-child { border-bottom: none; }
+.who { flex: 1 1 170px; min-width: 0; display: flex; align-items: center; gap: 12px; }
+.who-text { min-width: 0; display: flex; flex-direction: column; gap: 4px; align-items: flex-start; }
+.avatar { border-radius: 50%; color: #fff; font-weight: 700; display: flex; align-items: center; justify-content: center; flex: none; box-shadow: 0 2px 6px rgba(0,0,0,.18); width: 40px; height: 40px; font-size: 17px; }
+.name { font-weight: 600; overflow-wrap: anywhere; font-size: 15.5px; }
+.badge { display: inline-flex; align-items: center; font-size: 12.5px; color: #6b6a75; background: #f3f1f2; border-radius: 999px; padding: 3px 11px; }
+.badge-in { background: #e6f6ee; color: #0b7a4b; font-weight: 600; }
+.badge-in::before { content: ''; width: 7px; height: 7px; border-radius: 50%; background: #12a35f; margin-inline-end: 6px; }
+.badge-done { background: #eef2ff; color: #4f46e5; font-weight: 600; }
+.chip { display: inline-flex; align-items: center; gap: 5px; font-size: 12.5px; font-weight: 600; color: #6d28d9; background: #f1ecfe; border-radius: 999px; padding: 3px 11px; }
+.actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.btn { display: inline-flex; align-items: center; gap: 6px; border: none; border-radius: 999px; padding: 9px 15px; font: inherit; font-size: 14px; font-weight: 600; cursor: pointer; min-height: 40px; }
+.btn:active { transform: scale(.97); }
+.btn:disabled { opacity: .45; }
+.btn-in { background: linear-gradient(135deg, #10b981, #059669); color: #fff; box-shadow: 0 2px 8px rgba(16,185,129,.35); }
+.btn-out { background: #fff4e0; color: #b45309; border: 1px solid #f4d9a8; }
+.btn-del { background: transparent; color: #6b6a75; border: 1px solid #e2e1ea; }
+.btn-del-confirm { background: #fdecec; color: #c81e3a; border: 1px solid #f5c2c6; font-weight: 700; }
+.btn-add { background: linear-gradient(135deg, #6366f1, #8b5cf6); color: #fff; box-shadow: 0 2px 8px rgba(99,102,241,.35); }
+.btn-copy { background: #fff; color: #4f46e5; border: 1.5px solid #c7d2fe; width: 100%; justify-content: center; margin-top: 12px; }
+.btn-copy.done { background: #e6f6ee; color: #0b7a4b; border-color: #a7e5c5; }
+.hours { font-weight: 700; font-size: 16px; background: linear-gradient(135deg, #6366f1, #8b5cf6); -webkit-background-clip: text; background-clip: text; color: transparent; white-space: nowrap; }
+.callout { background: #fff8eb; border: 1px solid #f4d9a8; border-radius: 16px; padding: 14px 16px; font-size: 13.5px; line-height: 1.8; color: #7a5a13; }
+.callout b { display: block; margin-bottom: 4px; color: #92660a; }
+.owner { font-size: 13.5px; font-weight: 700; opacity: .95; margin-top: 4px; letter-spacing: .2px; }
+.foot { text-align: center; font-size: 12.5px; color: #8a8896; margin-top: 18px; }
+</style>
+<style>
+/* build 9: tap responsiveness */
+html, body, .btn, .row, input, label { touch-action: manipulation; }
+.btn, .actions, .badge, .chip, .avatar, .group-head h2, label { -webkit-user-select: none; user-select: none; }
+.btn {
+  transition: transform .12s ease, box-shadow .12s ease, filter .12s ease;
+  will-change: transform;
+}
+.btn:active {
+  transform: scale(.92);
+  filter: brightness(1.08) saturate(1.1);
+  box-shadow: 0 1px 3px rgba(20,20,40,.25);
+}
+.btn-in:active { filter: brightness(1.15); }
+.actions .btn { min-height: 46px; padding: 11px 18px; font-size: 14.5px; }
+input[type="checkbox"] { transform: scale(1.1); }
+input[type="time"] { touch-action: manipulation; }
+.pill { transition: background .12s ease; }
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="hero">
+    <h1>حضور وانصراف الموظفين</h1>
+    <div class="owner">تطبيق محمد وادي</div>
+    <div class="date" id="todayLabel"></div>
+    <p class="intro" id="intro"></p>
+  </div>
+  <div class="group">
+    <div class="group-head"><h2><span id="iconUsers"></span>الموظفون</h2><span class="pill" id="teamCount"></span></div>
+    <div class="add-row">
+      <input id="nameInput" type="text" placeholder="اسم الموظف (أو كذا اسم بينهم فاصلة)" enterkeyhint="done">
+      <button class="btn btn-add" id="addBtn"><span id="iconAdd"></span>أضف</button>
+    </div>
+    <div id="empList"></div>
+  </div>
+  <div class="group">
+    <div class="group-head"><h2><span id="iconClock"></span>سجل اليوم</h2><span class="pill" id="presentCount"></span></div>
+    <div id="todayList"></div>
+    <button class="btn btn-copy" id="copyDay" style="display:none">انسخ ملخص اليوم</button>
+  </div>
+  <div class="group">
+    <div class="group-head"><h2><span id="iconChart"></span>ساعات شهر المرتب</h2><span class="pill" id="curPeriod"></span></div>
+    <div id="monthList"></div>
+    <button class="btn btn-copy" id="copyMonth" style="display:none">انسخ ملخص الشهر</button>
+  </div>
+  <div class="group" id="prevGroup" style="display:none">
+    <div class="group-head"><h2><span id="iconCal"></span>شهر المرتب اللي فات</h2><span class="pill" id="prevPeriod"></span></div>
+    <div id="prevList"></div>
+    <button class="btn btn-copy" id="copyPrev">انسخ ملخص الشهر اللي فات</button>
+  </div>
+
+  <div class="group" id="acctGroup">
+    <div class="group-head"><h2><span id="iconCloud"></span>النسخ الاحتياطي</h2><span class="pill" id="syncState"></span></div>
+    <div id="acctOut">
+      <p class="hint">اعمل حساب بإيميلك وكلمة سر عشان بياناتك (الموظفين والتسجيلات) تتحفظ على حسابك - لو غيّرت موبايلك هتلاقيها زي ما هي.</p>
+      <div class="add-row"><input id="emailInput" type="email" placeholder="الإيميل" enterkeyhint="next" style="text-align:left" dir="ltr"></div>
+      <div class="add-row"><input id="passInput" type="password" placeholder="كلمة السر (٦ حروف على الأقل)" enterkeyhint="done" style="text-align:left" dir="ltr"></div>
+      <div class="add-row">
+        <button class="btn btn-add" id="signupBtn" style="flex:1">إنشاء حساب</button>
+        <button class="btn btn-copy" id="loginBtn" style="flex:1;margin-top:0;width:auto">تسجيل دخول</button>
+      </div>
+      <p class="hint" id="acctMsg"></p>
+    </div>
+    <div id="acctIn" style="display:none">
+      <p class="hint" id="acctWho"></p>
+      <button class="btn btn-copy" id="logoutBtn">تسجيل خروج (البيانات هتفضل على الموبايل)</button>
+    </div>
+  </div>
+
+  <div class="group" id="notifGroup">
+    <div class="group-head"><h2><span id="iconBell"></span>التنبيهات اليومية</h2><span class="pill" id="notifState"></span></div>
+    <div class="add-row" style="align-items:center">
+      <label style="display:flex;align-items:center;gap:8px;cursor:pointer">
+        <input type="checkbox" id="notifToggle" style="width:20px;height:20px">
+        <span>فكّرني كل يوم</span>
+      </label>
+    </div>
+    <div class="add-row"><label style="flex:1">تسجيل الحضور<input type="time" id="ciTime" value="13:00" style="width:100%;margin-top:4px"></label>
+    <label style="flex:1">تسجيل الانصراف<input type="time" id="coTime" value="00:00" style="width:100%;margin-top:4px"></label></div>
+    <p class="hint" id="notifMsg">هيوصلك إشعار وقت الحضور ووقت الانصراف كل يوم، حتى والتطبيق مقفول.</p>
+  </div>
+  <div class="callout"><b>مهم تعرفه</b>الأسماء والتوقيتات بتتحفظ جوه التطبيق على موبايلك نفسه، حتى لو قفلته وفتحته تاني، ومش بتتبعت لأي حد. التطبيق بيحتفظ بشهر المرتب الحالي واللي فات (من 26 لـ 25) — انسخ ملخص الشهر قبل ما الشهرين يعدّوا لو عايز أرشيف أطول. والتطبيق بيحدّث نفسه لوحده أول ما تفتحه والنت شغال.</div>
+  <div class="foot">صُنع خصيصاً لمحمد وادي 💜</div><div class="foot" style="margin-top:4px">الإصدار 9</div>
+</div>
+<script>
+var PERIOD_START_DAY = 26;
+function pad(n){ return String(n).padStart(2,'0'); }
+function dateKey(d){ return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate()); }
+function minutesOf(d){ return d.getHours()*60 + d.getMinutes(); }
+var timeFmt = new Intl.DateTimeFormat('ar-EG', { hour:'numeric', minute:'2-digit', numberingSystem:'latn' });
+function fmtTime(m){ return timeFmt.format(new Date(2000,0,1,Math.floor(m/60), m%60)); }
+var dayFmt = new Intl.DateTimeFormat('ar-EG', { weekday:'long', day:'numeric', month:'long', numberingSystem:'latn' });
+var dayMonthFmt = new Intl.DateTimeFormat('ar-EG', { day:'numeric', month:'long', numberingSystem:'latn' });
+function arUnit(n, one, two, few, many){
+  if(n===1) return n+' '+one;
+  if(n===2) return two;
+  if(n>=3 && n<=10) return n+' '+few;
+  return n+' '+many;
+}
+function fmtDuration(mins){
+  var h=Math.floor(mins/60), m=mins%60;
+  var hp=arUnit(h,'ساعة','ساعتين','ساعات','ساعة');
+  var mp=arUnit(m,'دقيقة','دقيقتين','دقائق','دقيقة');
+  if(h>0 && m>0) return hp+' و'+mp;
+  if(h>0) return hp;
+  return mp;
+}
+function periodStartOf(d){ var y=d.getFullYear(), m=d.getMonth(); return d.getDate()>=PERIOD_START_DAY ? new Date(y,m,PERIOD_START_DAY) : new Date(y,m-1,PERIOD_START_DAY); }
+function periodKeyOf(d){ var s=periodStartOf(d); return s.getFullYear()+'-'+pad(s.getMonth()+1); }
+function prevPeriodKey(key){ var p=key.split('-').map(Number); var d=new Date(p[0], p[1]-2, 1); return d.getFullYear()+'-'+pad(d.getMonth()+1); }
+function periodStartFromKey(key){ var p=key.split('-').map(Number); return new Date(p[0], p[1]-1, PERIOD_START_DAY); }
+function periodEndFromKey(key){ var p=key.split('-').map(Number); return new Date(p[0], p[1], PERIOD_START_DAY-1); }
+function periodLabel(key){ return 'من '+dayMonthFmt.format(periodStartFromKey(key))+' لحد '+dayMonthFmt.format(periodEndFromKey(key)); }
+function dayOffsetOf(d){ var s=periodStartOf(d); return Math.round((Date.UTC(d.getFullYear(),d.getMonth(),d.getDate())-Date.UTC(s.getFullYear(),s.getMonth(),s.getDate()))/86400000); }
+function emptyBucket(period){ return { period: period, rows: [] }; }
+
+var AVATARS=[['#6366f1','#8b5cf6'],['#0ea5e9','#06b6d4'],['#f59e0b','#f97316'],['#10b981','#34d399'],['#ec4899','#f43f5e'],['#8b5cf6','#d946ef'],['#14b8a6','#0ea5e9'],['#f97316','#ef4444']];
+function avatarFor(id){ var h=0; for(var i=0;i<id.length;i++) h=(h*31+id.charCodeAt(i))>>>0; return AVATARS[h%AVATARS.length]; }
+
+var ICONS={
+  userPlus:'M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2 M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8 M19 8v6 M22 11h-6',
+  login:'M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4 M10 17l5-5-5-5 M15 12H3',
+  logout:'M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4 M16 17l5-5-5-5 M21 12H9',
+  trash:'M3 6h18 M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2 M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6 M10 11v6 M14 11v6',
+  clock:'M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20 Z M12 6v6l4 2',
+  calendar:'M8 2v4 M16 2v4 M3 10h18 M5 4h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2 Z',
+  chart:'M3 3v16a2 2 0 0 0 2 2h16 M7 13l3-3 4 4 5-6',
+  users:'M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2 M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8 M23 21v-2a4 4 0 0 0-3-3.87 M16 3.13a4 4 0 0 1 0 7.75'
+};
+function svg(d, size){ size=size||16; return '<svg width="'+size+'" height="'+size+'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="'+d+'"/></svg>'; }
+function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function load(key, fallback){
+  try { var v = localStorage.getItem(key); return v ? JSON.parse(v) : fallback; }
+  catch(e){ return fallback; }
+}
+function save(key, val){
+  try { localStorage.setItem(key, JSON.stringify(val)); }
+  catch(e){ alert('مفيش مساحة كفاية للحفظ على الجهاز'); }
+}
+var now0 = new Date();
+var curKey = periodKeyOf(now0);
+var prevKey = prevPeriodKey(curKey);
+var employees = load('employees.v1', []);
+var cur = load('att.cur.v2', emptyBucket(curKey));
+var prev = load('att.prev.v2', emptyBucket(prevKey));
+var confirmingId = null;
+var confirmTimer = null;
+
+if(cur.period !== curKey){
+  prev = (cur.period === prevKey) ? cur : (prev.period === prevKey ? prev : emptyBucket(prevKey));
+  cur = emptyBucket(curKey);
+  save('att.cur.v2', cur); save('att.prev.v2', prev);
+}
+if(prev.period !== prevKey){ prev = emptyBucket(prevKey); save('att.prev.v2', prev); }
+
+function saveAll(){ save('employees.v1', employees); save('att.cur.v2', cur); save('att.prev.v2', prev); save('meta.updatedAt', Date.now()); if(typeof schedulePush==='function') schedulePush(); }
+function empName(id){ var e = employees.find(function(x){return x.id===id;}); return e ? e.name : 'موظف محذوف'; }
+function openRowIndex(empId, todayOffset){
+  return cur.rows.findIndex(function(r){ return r[0]===empId && r[1]===todayOffset && r[3]===null; });
+}
+function totalsFor(bucket){
+  var map = {};
+  bucket.rows.forEach(function(r){
+    if(r[3]===null) return;
+    var t = map[r[0]] || { mins:0, days:{} };
+    t.mins += Math.max(0, r[3]-r[2]);
+    t.days[r[1]] = true;
+    map[r[0]] = t;
+  });
+  return map;
+}
+function daysCount(t){ return Object.keys(t.days).length; }
+
+function copyText(text, btn){
+  function done(){
+    var old = btn.textContent;
+    btn.textContent = 'تم النسخ ✓'; btn.classList.add('done');
+    setTimeout(function(){ btn.textContent = old; btn.classList.remove('done'); }, 1600);
+  }
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(text).then(done, function(){ legacyCopy(text); done(); });
+  } else { legacyCopy(text); done(); }
+}
+function legacyCopy(text){
+  var ta = document.createElement('textarea');
+  ta.value = text; ta.style.position='fixed'; ta.style.opacity='0';
+  document.body.appendChild(ta); ta.select();
+  try { document.execCommand('copy'); } catch(e){}
+  document.body.removeChild(ta);
+}
+function monthTableHtml(totals){
+  if(employees.length===0) return '<p class="hint">أضف الموظفين الأول عشان تشوف مجموع ساعاتهم هنا.</p>';
+  return employees.map(function(emp){
+    var t = totals[emp.id];
+    var days = t ? arUnit(daysCount(t),'يوم','يومين','أيام','يوم')+' حضور' : 'لسه مفيش تسجيل';
+    var hrs = (t && t.mins>0) ? fmtDuration(t.mins) : '0 ساعة';
+    return '<div class="row"><div class="who"><div class="who-text"><div class="name">'+esc(emp.name)+'</div><div class="badge">'+days+'</div></div></div><div class="hours">'+hrs+'</div></div>';
+  }).join('');
+}
+function monthSummary(bucket, totals){
+  var lines = employees.map(function(e, n){
+    var t = totals[e.id];
+    var hours = (t && t.mins>0) ? fmtDuration(t.mins) : '0 ساعة';
+    var days = t ? arUnit(daysCount(t),'يوم','يومين','أيام','يوم') : '0 يوم';
+    return (n+1)+'. '+e.name+': '+hours+' ('+days+')';
+  });
+  return ['ملخص ساعات شهر المرتب - '+periodLabel(bucket.period)].concat(lines).join('\n');
+}
+function render(){
+  var now = new Date();
+  var todayOffset = dayOffsetOf(now);
+  document.getElementById('todayLabel').textContent = dayFmt.format(now);
+  document.getElementById('intro').textContent = 'سجّل حضور وانصراف فريقك بلمسة واحدة، والتطبيق يجمع لك ساعات كل موظف تلقائياً على شهر المرتب ('+periodLabel(cur.period)+').';
+  document.getElementById('teamCount').textContent = employees.length+' في الفريق';
+  document.getElementById('curPeriod').textContent = periodLabel(cur.period);
+
+  var curTotals = totalsFor(cur);
+  var presentNow = employees.filter(function(e){ return openRowIndex(e.id, todayOffset)>=0; }).length;
+  document.getElementById('presentCount').textContent = presentNow+' حاضر دلوقتي';
+
+  var empHtml;
+  if(employees.length===0){
+    empHtml = '<p class="hint">أضف أول موظف من فوق، وهيظهر هنا بزرار الحضور والانصراف بتاعه.</p>';
+  } else {
+    empHtml = employees.map(function(emp){
+      var idx = openRowIndex(emp.id, todayOffset);
+      var open = idx>=0 ? cur.rows[idx] : null;
+      var t = curTotals[emp.id];
+      var c = avatarFor(emp.id);
+      var badge = open ? '<div class="badge badge-in">حاضر من '+fmtTime(open[2])+'</div>' : '<div class="badge">مش مسجل النهاردة</div>';
+      var chip = (t && t.mins>0) ? '<div class="chip">'+svg(ICONS.clock,13)+' الشهر ده: '+fmtDuration(t.mins)+'</div>' : '';
+      var mainBtn = open
+        ? '<button class="btn btn-out" data-out="'+idx+'">'+svg(ICONS.logout)+' تسجيل انصراف</button>'
+        : '<button class="btn btn-in" data-in="'+emp.id+'">'+svg(ICONS.login)+' تسجيل حضور</button>';
+      var delCls = confirmingId===emp.id ? 'btn btn-del btn-del-confirm' : 'btn btn-del';
+      var delTxt = confirmingId===emp.id ? 'تأكيد' : 'حذف';
+      return '<div class="row"><div class="who"><div class="avatar" style="background:linear-gradient(135deg,'+c[0]+','+c[1]+')">'+esc(emp.name.trim().charAt(0))+'</div><div class="who-text"><div class="name">'+esc(emp.name)+'</div>'+badge+chip+'</div></div><div class="actions">'+mainBtn+'<button class="'+delCls+'" data-del="'+emp.id+'">'+svg(ICONS.trash)+' '+delTxt+'</button></div></div>';
+    }).join('');
+  }
+  document.getElementById('empList').innerHTML = empHtml;
+
+  var todayRows = cur.rows.map(function(r, idx){ return { r:r, idx:idx }; })
+    .filter(function(x){ return x.r[1]===todayOffset; })
+    .sort(function(a,b){ return a.r[2]-b.r[2]; });
+  if(todayRows.length===0){
+    document.getElementById('todayList').innerHTML = '<p class="hint">لسه مفيش تسجيلات النهاردة.</p>';
+    document.getElementById('copyDay').style.display = 'none';
+  } else {
+    document.getElementById('todayList').innerHTML = todayRows.map(function(x){
+      var r = x.r;
+      var badge = r[3]===null
+        ? '<div class="badge badge-in">حضور '+fmtTime(r[2])+' - لسه شغال</div>'
+        : '<div class="badge badge-done">'+fmtTime(r[2])+' - '+fmtTime(r[3])+' · '+fmtDuration(r[3]-r[2])+'</div>';
+      return '<div class="row"><div class="who"><div class="who-text"><div class="name">'+esc(empName(r[0]))+'</div>'+badge+'</div></div></div>';
+    }).join('');
+    document.getElementById('copyDay').style.display = '';
+  }
+  var attended = {}; todayRows.forEach(function(x){ attended[x.r[0]] = true; });
+  var absent = employees.filter(function(e){ return !attended[e.id]; });
+  var dailyLines = todayRows.map(function(x, n){
+    var r = x.r;
+    var out = r[3]===null ? 'لسه شغال' : 'انصراف '+fmtTime(r[3])+' ('+fmtDuration(r[3]-r[2])+')';
+    return (n+1)+'. '+empName(r[0])+': حضور '+fmtTime(r[2])+' - '+out;
+  });
+  if(absent.length>0) dailyLines.push('لم يحضر: '+absent.map(function(e){return e.name;}).join('، '));
+  window._dailySummary = ['ملخص الحضور - '+dayFmt.format(now)].concat(dailyLines).join('\n');
+
+  document.getElementById('monthList').innerHTML = monthTableHtml(curTotals);
+  document.getElementById('copyMonth').style.display = employees.length ? '' : 'none';
+  window._monthSummary = monthSummary(cur, curTotals);
+
+  var prevTotals = totalsFor(prev);
+  if(prev.rows.length>0 && employees.length>0){
+    document.getElementById('prevGroup').style.display = '';
+    document.getElementById('prevPeriod').textContent = periodLabel(prev.period);
+    document.getElementById('prevList').innerHTML = monthTableHtml(prevTotals);
+    window._prevSummary = monthSummary(prev, prevTotals);
+  } else {
+    document.getElementById('prevGroup').style.display = 'none';
+  }
+}
+function addEmployee(){
+  var input = document.getElementById('nameInput');
+  var parts = input.value.split(/[,،;\n]+/).map(function(s){ return s.trim(); }).filter(function(s){ return s.length>0; });
+  if(parts.length===0) return;
+  parts.forEach(function(name){
+    employees.push({ id:'e'+(Date.now()%1000000).toString(36)+Math.floor(Math.random()*1296).toString(36), name:name });
+  });
+  input.value = '';
+  saveAll(); render(); input.focus();
+}
+document.getElementById('addBtn').addEventListener('click', addEmployee);
+document.getElementById('nameInput').addEventListener('keydown', function(e){ if(e.key==='Enter') addEmployee(); });
+
+document.getElementById('empList').addEventListener('click', function(ev){
+  var btn = ev.target.closest('button');
+  if(!btn) return;
+  var t = new Date();
+  if(btn.dataset.in){
+    cur.rows.push([btn.dataset.in, dayOffsetOf(t), minutesOf(t), null]);
+    saveAll(); render();
+  } else if(btn.dataset.out){
+    var idx = Number(btn.dataset.out);
+    if(idx>=0 && cur.rows[idx]){ cur.rows[idx][3] = minutesOf(t); saveAll(); render(); }
+  } else if(btn.dataset.del){
+    var id = btn.dataset.del;
+    if(confirmingId !== id){
+      confirmingId = id; render();
+      clearTimeout(confirmTimer);
+      confirmTimer = setTimeout(function(){ confirmingId = null; render(); }, 6000);
+      return;
+    }
+    confirmingId = null; clearTimeout(confirmTimer);
+    employees = employees.filter(function(e){ return e.id!==id; });
+    cur.rows = cur.rows.filter(function(r){ return r[0]!==id; });
+    prev.rows = prev.rows.filter(function(r){ return r[0]!==id; });
+    saveAll(); render();
+  }
+});
+document.getElementById('copyDay').addEventListener('click', function(){ copyText(window._dailySummary, this); });
+document.getElementById('copyMonth').addEventListener('click', function(){ copyText(window._monthSummary, this); });
+document.getElementById('copyPrev').addEventListener('click', function(){ copyText(window._prevSummary, this); });
+
+document.getElementById('iconUsers').innerHTML = svg(ICONS.users,18);
+document.getElementById('iconAdd').innerHTML = svg(ICONS.userPlus,16);
+document.getElementById('iconClock').innerHTML = svg(ICONS.clock,18);
+document.getElementById('iconChart').innerHTML = svg(ICONS.chart,18);
+document.getElementById('iconCal').innerHTML = svg(ICONS.calendar,18);
+
+// ===== cloud backup sync (Supabase) =====
+var SUPA_URL = "https://vrxoaxisichhscpgkrnq.supabase.co";
+var SUPA_KEY = "sb_publishable_FFZ1QKj9_XsGle9grvwZdg_mryzMrSZ";
+var acct = { email: load('acct.email', null), access: load('acct.access', null), refresh: load('acct.refresh', null), uid: load('acct.uid', null) };
+var syncTimer = null;
+function setSyncState(t){ var el = document.getElementById('syncState'); if(el) el.textContent = t; }
+function acctSay(t, err){ var el = document.getElementById('acctMsg'); if(el){ el.textContent = t; el.style.color = err ? '#b3261e' : '#6b6a75'; } }
+function showAcct(){
+  var inEl = document.getElementById('acctIn'), outEl = document.getElementById('acctOut');
+  if(!inEl || !outEl) return;
+  if(acct.access){
+    inEl.style.display=''; outEl.style.display='none';
+    document.getElementById('acctWho').textContent = 'مسجل دخولك كـ ' + acct.email + ' - بياناتك بتتزامن مع حسابك تلقائياً.';
+    setSyncState('المزامنة شغالة');
+  } else {
+    inEl.style.display='none'; outEl.style.display='';
+    setSyncState('محلي فقط');
+  }
+}
+function sFetch(path, opts, retried){
+  opts = opts || {};
+  opts.headers = opts.headers || {};
+  opts.headers['apikey'] = SUPA_KEY;
+  opts.headers['Content-Type'] = 'application/json';
+  if(acct.access) opts.headers['Authorization'] = 'Bearer ' + acct.access;
+  return fetch(SUPA_URL + path, opts).then(function(r){
+    if(r.status === 401 && acct.refresh && !retried){
+      return refreshToken().then(function(){ return sFetch(path, opts, true); });
+    }
+    return r.json().catch(function(){ return {}; }).then(function(j){
+      if(!r.ok){
+        var m = j.msg || j.message || j.error_description || j.error || ('خطأ ' + r.status);
+        if(m === 'Invalid login credentials') m = 'الإيميل أو كلمة السر غلط';
+        if(String(m).indexOf('already registered') >= 0) m = 'الإيميل ده مسجل قبل كده - جرب تسجيل دخول';
+        throw new Error(m);
+      }
+      return j;
+    });
+  });
+}
+function refreshToken(){
+  return fetch(SUPA_URL + '/auth/v1/token?grant_type=refresh_token', {
+    method: 'POST',
+    headers: { 'apikey': SUPA_KEY, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ refresh_token: acct.refresh })
+  }).then(function(r){ return r.json(); }).then(function(j){
+    if(!j.access_token) throw new Error('جلسة منتهية - سجل دخول تاني');
+    acct.access = j.access_token; acct.refresh = j.refresh_token || acct.refresh;
+    if(j.user && j.user.id) acct.uid = j.user.id;
+    save('acct.access', acct.access); save('acct.refresh', acct.refresh); save('acct.uid', acct.uid);
+  });
+}
+function doAuth(path){
+  var email = document.getElementById('emailInput').value.trim();
+  var pass = document.getElementById('passInput').value;
+  if(!email || email.indexOf('@') < 0){ acctSay('اكتب إيميل صحيح', true); return; }
+  if(pass.length < 6){ acctSay('كلمة السر ٦ حروف على الأقل', true); return; }
+  acctSay('ثانية...');
+  sFetch(path, { method: 'POST', body: JSON.stringify({ email: email, password: pass }) }).then(function(j){
+    if(!j.access_token){ acctSay('اتسجل الحساب بس محتاج تأكيد الإيميل - راجع بريدك', true); return; }
+    acct.email = email; acct.access = j.access_token; acct.refresh = j.refresh_token; acct.uid = j.user.id;
+    save('acct.email', acct.email); save('acct.access', acct.access); save('acct.refresh', acct.refresh); save('acct.uid', acct.uid);
+    acctSay(''); showAcct();
+    pullSync(true);
+  }).catch(function(e){ acctSay(e.message === 'Failed to fetch' ? 'مفيش نت - جرب تاني لما النت يشتغل' : e.message, true); });
+}
+function pushSync(){
+  if(!acct.access || !acct.uid) return;
+  var ts = Math.max(load('meta.updatedAt', 0), Date.now());
+  var payload = { employees: employees, cur: cur, prev: prev, updatedAt: ts };
+  sFetch('/rest/v1/backups', {
+    method: 'POST',
+    headers: { 'Prefer': 'resolution=merge-duplicates' },
+    body: JSON.stringify({ user_id: acct.uid, data: payload })
+  }).then(function(){ setSyncState('اتزامن ✓'); })
+  .catch(function(){ setSyncState('هيحاول تاني'); });
+}
+function schedulePush(){
+  if(!acct.access) return;
+  clearTimeout(syncTimer);
+  syncTimer = setTimeout(pushSync, 2500);
+}
+function pullSync(first){
+  if(!acct.access) return;
+  sFetch('/rest/v1/backups?select=data', { method: 'GET' }).then(function(rows){
+    var row = rows && rows.length ? rows[0] : null;
+    if(!row || !row.data){ if(first) pushSync(); return; }
+    var remoteU = row.data.updatedAt || 0;
+    var localU = load('meta.updatedAt', 0);
+    var remoteEmps = (row.data.employees || []).length;
+    var remoteNewer = remoteU > localU || (employees.length === 0 && remoteEmps > 0);
+    if(remoteNewer){
+      employees = row.data.employees || [];
+      cur = row.data.cur || cur;
+      prev = row.data.prev || prev;
+      saveAll();
+      render();
+      setSyncState('اتزامن ✓');
+    } else if (first) { pushSync(); }
+  }).catch(function(){ setSyncState('هيحاول تاني'); });
+}
+document.getElementById('signupBtn').addEventListener('click', function(){ doAuth('/auth/v1/signup'); });
+document.getElementById('loginBtn').addEventListener('click', function(){ doAuth('/auth/v1/token?grant_type=password'); });
+document.getElementById('logoutBtn').addEventListener('click', function(){
+  acct.email = null; acct.access = null; acct.refresh = null; acct.uid = null;
+  save('acct.email', null); save('acct.access', null); save('acct.refresh', null); save('acct.uid', null);
+  showAcct();
+});
+document.getElementById('iconCloud').innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.5 19a4.5 4.5 0 1 0 0-9h-1.8A7 7 0 1 0 9 19h8.5z"/></svg>';
+showAcct();
+if(acct.access) setTimeout(function(){ pullSync(true); }, 800);
+// ===== end sync =====
+
+// ===== daily reminders (native bridge) =====
+var notif = load('notif.v1', { enabled: false, ci: 780, co: 0 });
+function minToTime(m){ var h = Math.floor(m/60), mm = m%60; return (h<10?'0':'')+h+':'+(mm<10?'0':'')+mm; }
+function timeToMin(t){ var p = (t||'0:0').split(':'); return (parseInt(p[0],10)||0)*60 + (parseInt(p[1],10)||0); }
+function notifSay(t){ var el = document.getElementById('notifMsg'); if(el) el.textContent = t; }
+function notifApply(){
+  save('notif.v1', notif);
+  var stateEl = document.getElementById('notifState');
+  if(window.WadiNotif){
+    WadiNotif.schedule(notif.enabled, notif.ci, notif.co);
+    var st = JSON.parse(WadiNotif.state());
+    if(stateEl) stateEl.textContent = notif.enabled ? 'شغالة' : 'مقفولة';
+    if(notif.enabled && !st.permission){
+      notifSay('فعّل إذن الإشعارات عشان توصلك التنبيهات');
+      WadiNotif.requestPermission();
+    } else {
+      notifSay(notif.enabled ? 'هيوصلك إشعار وقت الحضور ووقت الانصراف كل يوم، حتى والتطبيق مقفول.' : 'التنبيهات مقفولة.');
+    }
+  } else {
+    if(stateEl) stateEl.textContent = 'محتاج تحديث';
+    notifSay('التنبيهات بتشتغل في النسخة الجديدة من التطبيق - حمّل آخر نسخة APK ونصّبها فوق القديمة، وبياناتك مش هتروح.');
+  }
+}
+(function(){
+  var tog = document.getElementById('notifToggle'), ci = document.getElementById('ciTime'), co = document.getElementById('coTime');
+  if(!tog) return;
+  tog.checked = !!notif.enabled;
+  ci.value = minToTime(notif.ci); co.value = minToTime(notif.co);
+  tog.addEventListener('change', function(){ notif.enabled = tog.checked; notifApply(); });
+  ci.addEventListener('change', function(){ notif.ci = timeToMin(ci.value); notifApply(); });
+  co.addEventListener('change', function(){ notif.co = timeToMin(co.value); notifApply(); });
+  document.getElementById('iconBell').innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg>';
+  notifApply();
+})();
+// ===== end reminders =====
+
+render();
+</script>
+</body>
+</html>
