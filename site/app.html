@@ -62,6 +62,18 @@ body {
 .callout b { display: block; margin-bottom: 4px; color: #92660a; }
 .owner { font-size: 13.5px; font-weight: 700; opacity: .95; margin-top: 4px; letter-spacing: .2px; }
 .foot { text-align: center; font-size: 12.5px; color: #8a8896; margin-top: 18px; }
+
+.pay{font-size:13px;font-weight:700;color:#0b7a4b;text-align:end}
+.rate-in{width:84px;border:1.5px solid #e2e1ea;border-radius:10px;padding:6px 8px;font:inherit;font-size:13px;background:#fafafc;margin-top:4px}
+.tot{display:flex;justify-content:space-between;gap:10px;padding:12px 14px;margin-top:8px;border-radius:14px;background:#e6f6ee;color:#0b7a4b;font-weight:700;flex-wrap:wrap}
+.dayhead{font-weight:700;font-size:14.5px;margin:14px 0 6px;color:#0b7a4b}
+.note-in{width:100%;border:1.5px solid #e2e1ea;border-radius:12px;padding:8px 12px;font:inherit;font-size:14px;background:#fafafc;min-height:40px;resize:vertical;box-sizing:border-box}
+.btn-edit{background:#e6f6ee;color:#0b7a4b;border:1px solid #a7e5c5}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.45);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
+.modal.on{display:flex}
+.modal-box{background:#fff;border-radius:18px;padding:18px;width:100%;max-width:380px;display:flex;flex-direction:column;gap:10px}
+.modal-box label{display:flex;flex-direction:column;gap:4px;font-size:13.5px;font-weight:600}
+.modal-box input,.modal-box select{border:1.5px solid #e2e1ea;border-radius:10px;padding:9px 10px;font:inherit;font-size:15px;background:#fafafc}
 </style>
 <style>
 /* build 9: tap responsiveness */
@@ -106,8 +118,15 @@ input[type="time"] { touch-action: manipulation; }
   </div>
   <div class="group">
     <div class="group-head"><h2><span id="iconChart"></span>ساعات شهر المرتب</h2><span class="pill" id="curPeriod"></span></div>
+    <div class="add-row" style="align-items:center"><label style="flex:1;display:flex;flex-direction:column;gap:4px;font-weight:600;font-size:13.5px">سعر الساعة (ج.م) - الافتراضي لكل الموظفين<input type="number" inputmode="decimal" min="0" step="any" id="rateInput" placeholder="مثلاً 50"></label></div>
     <div id="monthList"></div>
+    <div id="monthTotal"></div>
     <button class="btn btn-copy" id="copyMonth" style="display:none">انسخ ملخص الشهر</button>
+  </div>
+  <div class="group">
+    <div class="group-head"><h2>السجل والملاحظات</h2><button class="btn btn-edit" id="addManual">+ تسجيل يدوي</button></div>
+    <p class="hint">عدّل أو امسح أي حضور أو انصراف، واكتب ملاحظة جنب أي يوم (بتتحفظ تلقائياً).</p>
+    <div id="logList"></div>
   </div>
   <div class="group" id="prevGroup" style="display:none">
     <div class="group-head"><h2><span id="iconCal"></span>شهر المرتب اللي فات</h2><span class="pill" id="prevPeriod"></span></div>
@@ -146,8 +165,17 @@ input[type="time"] { touch-action: manipulation; }
     <p class="hint" id="notifMsg">هيوصلك إشعار وقت الحضور ووقت الانصراف كل يوم، حتى والتطبيق مقفول.</p>
   </div>
   <div class="callout"><b>مهم تعرفه</b>الأسماء والتوقيتات بتتحفظ جوه التطبيق على موبايلك نفسه، حتى لو قفلته وفتحته تاني، ومش بتتبعت لأي حد. التطبيق بيحتفظ بشهر المرتب الحالي واللي فات (من 26 لـ 25) — انسخ ملخص الشهر قبل ما الشهرين يعدّوا لو عايز أرشيف أطول. والتطبيق بيحدّث نفسه لوحده أول ما تفتحه والنت شغال.</div>
-  <div class="foot">صُنع خصيصاً لمحمد وادي 💚</div><div class="foot" style="margin-top:4px">الإصدار 9</div>
+  <div class="foot">صُنع خصيصاً لمحمد وادي 💚</div><div class="foot" style="margin-top:4px">الإصدار 11</div>
 </div>
+<div class="modal" id="editModal"><div class="modal-box">
+  <b id="edTitle">تعديل التسجيل</b>
+  <label>الموظف<select id="edEmp"></select></label>
+  <label>التاريخ<input type="date" id="edDate"></label>
+  <label>وقت الحضور<input type="time" id="edIn"></label>
+  <label>وقت الانصراف (سيبه فاضي لو لسه شغال)<input type="time" id="edOut"></label>
+  <p class="hint" id="edMsg" style="color:#b3261e;margin:0"></p>
+  <div style="display:flex;gap:8px"><button class="btn btn-in" id="edSave" style="flex:1;justify-content:center">حفظ</button><button class="btn btn-del" id="edDel">مسح التسجيل</button><button class="btn btn-del" id="edCancel">إلغاء</button></div>
+</div></div>
 <script>
 var PERIOD_START_DAY = 26;
 function pad(n){ return String(n).padStart(2,'0'); }
@@ -209,20 +237,39 @@ var prevKey = prevPeriodKey(curKey);
 var employees = load('employees.v1', []);
 var cur = load('att.cur.v2', emptyBucket(curKey));
 var prev = load('att.prev.v2', emptyBucket(prevKey));
+var notes = load('notes.v1', {});
+var rate = load('rate.v1', 0);
 var confirmingId = null;
 var confirmTimer = null;
 
-if(cur.period !== curKey){
-  prev = (cur.period === prevKey) ? cur : (prev.period === prevKey ? prev : emptyBucket(prevKey));
-  cur = emptyBucket(curKey);
-  save('att.cur.v2', cur); save('att.prev.v2', prev);
+function rollPeriod(){
+  var k = periodKeyOf(new Date());
+  curKey = k; prevKey = prevPeriodKey(k);
+  var changed = false;
+  if(cur.period !== curKey){
+    prev = (cur.period === prevKey) ? cur : (prev.period === prevKey ? prev : emptyBucket(prevKey));
+    cur = emptyBucket(curKey); changed = true;
+  }
+  if(prev.period !== prevKey){ prev = emptyBucket(prevKey); changed = true; }
+  if(changed){ save('att.cur.v2', cur); save('att.prev.v2', prev); }
+  return changed;
 }
-if(prev.period !== prevKey){ prev = emptyBucket(prevKey); save('att.prev.v2', prev); }
+rollPeriod();
 
-function saveAll(){ save('employees.v1', employees); save('att.cur.v2', cur); save('att.prev.v2', prev); save('meta.updatedAt', Date.now()); if(typeof schedulePush==='function') schedulePush(); }
+function saveAll(){ save('employees.v1', employees); save('att.cur.v2', cur); save('att.prev.v2', prev); save('notes.v1', notes); save('rate.v1', rate); save('meta.updatedAt', Date.now()); if(typeof schedulePush==='function') schedulePush(); }
 function empName(id){ var e = employees.find(function(x){return x.id===id;}); return e ? e.name : 'موظف محذوف'; }
-function openRowIndex(empId, todayOffset){
-  return cur.rows.findIndex(function(r){ return r[0]===empId && r[1]===todayOffset && r[3]===null; });
+function findOpen(empId){
+  var i = cur.rows.findIndex(function(r){ return r[0]===empId && r[3]===null; });
+  if(i>=0) return { b:'c', i:i, r:cur.rows[i] };
+  i = prev.rows.findIndex(function(r){ return r[0]===empId && r[3]===null; });
+  if(i>=0) return { b:'p', i:i, r:prev.rows[i] };
+  return null;
+}
+function closeRow(row, t){
+  var out;
+  if(row[4]){ out = row[2] + Math.max(0, Math.round((t.getTime()-row[4])/60000)); }
+  else { out = minutesOf(t); if(out < row[2]) out += 1440; }
+  row[3] = out;
 }
 function totalsFor(bucket){
   var map = {};
@@ -254,25 +301,41 @@ function legacyCopy(text){
   try { document.execCommand('copy'); } catch(e){}
   document.body.removeChild(ta);
 }
-function monthTableHtml(totals){
+function rateOf(emp){ return (emp.rate!=null && emp.rate!=='' && !isNaN(emp.rate)) ? Number(emp.rate) : Number(rate)||0; }
+function money(n){ return (Math.round(n*100)/100).toLocaleString('en',{maximumFractionDigits:2}); }
+function monthTableHtml(totals, editable){
   if(employees.length===0) return '<p class="hint">أضف الموظفين الأول عشان تشوف مجموع ساعاتهم هنا.</p>';
   return employees.map(function(emp){
     var t = totals[emp.id];
     var days = t ? arUnit(daysCount(t),'يوم','يومين','أيام','يوم')+' حضور' : 'لسه مفيش تسجيل';
     var hrs = (t && t.mins>0) ? fmtDuration(t.mins) : '0 ساعة';
-    return '<div class="row"><div class="who"><div class="who-text"><div class="name">'+esc(emp.name)+'</div><div class="badge">'+days+'</div></div></div><div class="hours">'+hrs+'</div></div>';
+    var r = rateOf(emp);
+    var pay = (t && t.mins>0 && r>0) ? '<div class="pay">'+money(t.mins/60*r)+' ج.م</div>' : '';
+    var rin = editable ? '<input class="rate-in" type="number" inputmode="decimal" min="0" step="any" data-rate="'+emp.id+'" placeholder="سعر مخصص" value="'+((emp.rate!=null&&emp.rate!=='')?esc(emp.rate):'')+'">' : '';
+    return '<div class="row"><div class="who"><div class="who-text"><div class="name">'+esc(emp.name)+'</div><div class="badge">'+days+'</div></div></div><div style="text-align:end"><div class="hours">'+hrs+'</div>'+pay+rin+'</div></div>';
   }).join('');
+}
+function totalsHtml(totals){
+  var mins=0, pay=0;
+  employees.forEach(function(e){ var t=totals[e.id]; if(t){ mins+=t.mins; pay+=t.mins/60*rateOf(e); } });
+  if(employees.length===0) return '';
+  return '<div class="tot"><span>إجمالي الساعات: '+(mins>0?fmtDuration(mins):'0 ساعة')+' ('+money(mins/60)+' س)</span><span>إجمالي المرتبات: '+money(pay)+' ج.م</span></div>';
 }
 function monthSummary(bucket, totals){
   var lines = employees.map(function(e, n){
     var t = totals[e.id];
     var hours = (t && t.mins>0) ? fmtDuration(t.mins) : '0 ساعة';
     var days = t ? arUnit(daysCount(t),'يوم','يومين','أيام','يوم') : '0 يوم';
-    return (n+1)+'. '+e.name+': '+hours+' ('+days+')';
+    var r = rateOf(e);
+    var pay = (t && t.mins>0 && r>0) ? ' - '+money(t.mins/60*r)+' ج.م' : '';
+    return (n+1)+'. '+e.name+': '+hours+' ('+days+')'+pay;
   });
+  var tp=0, tm=0; employees.forEach(function(e){ var t=totals[e.id]; if(t){ tm+=t.mins; tp+=t.mins/60*rateOf(e); } });
+  if(tp>0) lines.push('الإجمالي: '+fmtDuration(tm)+' - '+money(tp)+' ج.م');
   return ['ملخص ساعات شهر المرتب - '+periodLabel(bucket.period)].concat(lines).join('\n');
 }
 function render(){
+  rollPeriod();
   var now = new Date();
   var todayOffset = dayOffsetOf(now);
   document.getElementById('todayLabel').textContent = dayFmt.format(now);
@@ -281,7 +344,7 @@ function render(){
   document.getElementById('curPeriod').textContent = periodLabel(cur.period);
 
   var curTotals = totalsFor(cur);
-  var presentNow = employees.filter(function(e){ return openRowIndex(e.id, todayOffset)>=0; }).length;
+  var presentNow = employees.filter(function(e){ return !!findOpen(e.id); }).length;
   document.getElementById('presentCount').textContent = presentNow+' حاضر دلوقتي';
 
   var empHtml;
@@ -289,11 +352,12 @@ function render(){
     empHtml = '<p class="hint">أضف أول موظف من فوق، وهيظهر هنا بزرار الحضور والانصراف بتاعه.</p>';
   } else {
     empHtml = employees.map(function(emp){
-      var idx = openRowIndex(emp.id, todayOffset);
-      var open = idx>=0 ? cur.rows[idx] : null;
+      var fo = findOpen(emp.id);
+      var open = fo ? fo.r : null;
+      var idx = fo ? (fo.b+':'+fo.i) : '';
       var t = curTotals[emp.id];
       var c = avatarFor(emp.id);
-      var badge = open ? '<div class="badge badge-in">حاضر من '+fmtTime(open[2])+'</div>' : '<div class="badge">مش مسجل النهاردة</div>';
+      var badge = open ? '<div class="badge badge-in">حاضر من '+fmtTime(open[2])+((open[4] && dateKey(new Date(open[4]))!==dateKey(new Date())) ? ' (امبارح)' : '')+'</div>' : '<div class="badge">مش مسجل النهاردة</div>';
       var chip = (t && t.mins>0) ? '<div class="chip">'+svg(ICONS.clock,13)+' الشهر ده: '+fmtDuration(t.mins)+'</div>' : '';
       var mainBtn = open
         ? '<button class="btn btn-out" data-out="'+idx+'">'+svg(ICONS.logout)+' تسجيل انصراف</button>'
@@ -306,7 +370,8 @@ function render(){
   document.getElementById('empList').innerHTML = empHtml;
 
   var todayRows = cur.rows.map(function(r, idx){ return { r:r, idx:idx }; })
-    .filter(function(x){ return x.r[1]===todayOffset; })
+    .concat(prev.rows.map(function(r, idx){ return { r:r, idx:idx }; }).filter(function(x){ return x.r[3]===null; }))
+    .filter(function(x){ return x.r[1]===todayOffset || x.r[3]===null; })
     .sort(function(a,b){ return a.r[2]-b.r[2]; });
   if(todayRows.length===0){
     document.getElementById('todayList').innerHTML = '<p class="hint">لسه مفيش تسجيلات النهاردة.</p>';
@@ -329,9 +394,13 @@ function render(){
     return (n+1)+'. '+empName(r[0])+': حضور '+fmtTime(r[2])+' - '+out;
   });
   if(absent.length>0) dailyLines.push('لم يحضر: '+absent.map(function(e){return e.name;}).join('، '));
+  var tn = notes[dateKey(now)]; if(tn) dailyLines.push('ملاحظة: '+tn);
   window._dailySummary = ['ملخص الحضور - '+dayFmt.format(now)].concat(dailyLines).join('\n');
 
-  document.getElementById('monthList').innerHTML = monthTableHtml(curTotals);
+  document.getElementById('monthList').innerHTML = monthTableHtml(curTotals, true);
+  document.getElementById('monthTotal').innerHTML = totalsHtml(curTotals);
+  var ri = document.getElementById('rateInput'); if(ri && document.activeElement!==ri) ri.value = rate ? rate : '';
+  renderLog();
   document.getElementById('copyMonth').style.display = employees.length ? '' : 'none';
   window._monthSummary = monthSummary(cur, curTotals);
 
@@ -339,12 +408,95 @@ function render(){
   if(prev.rows.length>0 && employees.length>0){
     document.getElementById('prevGroup').style.display = '';
     document.getElementById('prevPeriod').textContent = periodLabel(prev.period);
-    document.getElementById('prevList').innerHTML = monthTableHtml(prevTotals);
+    document.getElementById('prevList').innerHTML = monthTableHtml(prevTotals, false) + totalsHtml(prevTotals);
     window._prevSummary = monthSummary(prev, prevTotals);
   } else {
     document.getElementById('prevGroup').style.display = 'none';
   }
 }
+function bucketDate(period, off){ var st = periodStartFromKey(period); return new Date(st.getFullYear(), st.getMonth(), st.getDate()+off); }
+function renderLog(){
+  var el = document.getElementById('logList'); if(!el) return;
+  if(el.contains(document.activeElement) && document.activeElement.tagName==='TEXTAREA') return;
+  var days = {}; var todayK = dateKey(new Date());
+  function add(b, bk){ bk.rows.forEach(function(r, i){ var d = bucketDate(bk.period, r[1]); var k = dateKey(d); (days[k] = days[k] || { d:d, items:[] }).items.push({ b:b, i:i, r:r }); }); }
+  add('c', cur); add('p', prev);
+  if(!days[todayK]) days[todayK] = { d:new Date(), items:[] };
+  Object.keys(notes).forEach(function(k){ if(notes[k] && !days[k]){ var p=k.split('-').map(Number); days[k] = { d:new Date(p[0],p[1]-1,p[2]), items:[] }; } });
+  var keys = Object.keys(days).sort().reverse();
+  el.innerHTML = keys.map(function(k){
+    var day = days[k];
+    var rows = day.items.sort(function(a,b){ return a.r[2]-b.r[2]; }).map(function(x){
+      var r = x.r;
+      var span = r[3]===null ? fmtTime(r[2])+' - لسه شغال' : fmtTime(r[2])+' - '+fmtTime(r[3])+' · '+fmtDuration(Math.max(0,r[3]-r[2]));
+      return '<div class="row"><div class="who"><div class="who-text"><div class="name">'+esc(empName(r[0]))+'</div><div class="badge">'+span+'</div></div></div><button class="btn btn-edit" data-edit="'+x.b+':'+x.i+'">تعديل / مسح</button></div>';
+    }).join('');
+    return '<div class="dayhead">'+dayFmt.format(day.d)+'</div>'+rows+'<textarea class="note-in" data-note="'+k+'" placeholder="ملاحظة على اليوم ده...">'+esc(notes[k]||'')+'</textarea>';
+  }).join('');
+}
+var editing = null;
+function openEditor(ref){
+  var sel = document.getElementById('edEmp');
+  sel.innerHTML = employees.map(function(e){ return '<option value="'+e.id+'">'+esc(e.name)+'</option>'; }).join('');
+  var d, inM, outM;
+  if(ref){
+    var pr = ref.split(':'); var bk = pr[0]==='p' ? prev : cur; var r = bk.rows[Number(pr[1])]; if(!r) return;
+    editing = { b:pr[0], i:Number(pr[1]) };
+    sel.value = r[0]; d = bucketDate(bk.period, r[1]); inM = r[2]; outM = r[3];
+    document.getElementById('edTitle').textContent = 'تعديل التسجيل';
+    document.getElementById('edDel').style.display = '';
+  } else {
+    editing = null; d = new Date(); inM = 780; outM = null;
+    document.getElementById('edTitle').textContent = 'تسجيل يدوي';
+    document.getElementById('edDel').style.display = 'none';
+  }
+  document.getElementById('edDate').value = dateKey(d);
+  document.getElementById('edIn').value = minToTime(inM % 1440);
+  document.getElementById('edOut').value = (outM===null||outM===undefined) ? '' : minToTime(outM % 1440);
+  document.getElementById('edMsg').textContent = '';
+  document.getElementById('editModal').classList.add('on');
+}
+function closeEditor(){ document.getElementById('editModal').classList.remove('on'); editing = null; }
+function removeEditing(){ if(editing){ (editing.b==='p'?prev:cur).rows.splice(editing.i,1); } }
+function saveEditor(){
+  var msg = document.getElementById('edMsg');
+  var emp = document.getElementById('edEmp').value, dv = document.getElementById('edDate').value;
+  var iv = document.getElementById('edIn').value, ov = document.getElementById('edOut').value;
+  if(!emp || !dv || !iv){ msg.textContent = 'اختار الموظف والتاريخ ووقت الحضور'; return; }
+  var dp = dv.split('-').map(Number); var d = new Date(dp[0], dp[1]-1, dp[2]);
+  var key = periodKeyOf(d); var bk = key===cur.period ? cur : (key===prev.period ? prev : null);
+  if(!bk){ msg.textContent = 'التاريخ ده برا شهر المرتب الحالي واللي فات'; return; }
+  var inM = timeToMin(iv), outM = null;
+  if(ov){ outM = timeToMin(ov); if(outM <= inM) outM += 1440; }
+  var ps = periodStartFromKey(key);
+  var off = Math.round((Date.UTC(d.getFullYear(),d.getMonth(),d.getDate())-Date.UTC(ps.getFullYear(),ps.getMonth(),ps.getDate()))/86400000);
+  var skip = editing ? (editing.b==='p'?prev:cur).rows[editing.i] : null;
+  if(outM===null){
+    var other = findOpen(emp);
+    if(other && other.r!==skip){ msg.textContent = 'الموظف ده عنده حضور مفتوح بالفعل - سجّل انصرافه الأول'; return; }
+  }
+  var ep = outM===null ? new Date(d.getFullYear(), d.getMonth(), d.getDate(), Math.floor(inM/60), inM%60).getTime() : null;
+  removeEditing();
+  bk.rows.push([emp, off, inM, outM, ep]);
+  saveAll(); closeEditor(); render();
+}
+document.getElementById('edSave').addEventListener('click', saveEditor);
+document.getElementById('edCancel').addEventListener('click', closeEditor);
+document.getElementById('edDel').addEventListener('click', function(){
+  if(!editing) return;
+  if(this.dataset.armed!=='1'){ this.dataset.armed='1'; this.textContent='دوس تاني للتأكيد'; var b=this; setTimeout(function(){ b.dataset.armed=''; b.textContent='مسح التسجيل'; },4000); return; }
+  this.dataset.armed=''; this.textContent='مسح التسجيل';
+  removeEditing(); saveAll(); closeEditor(); render();
+});
+document.getElementById('addManual').addEventListener('click', function(){ if(employees.length===0){ alert('أضف موظف الأول'); return; } openEditor(null); });
+document.getElementById('logList').addEventListener('click', function(ev){ var b = ev.target.closest('button[data-edit]'); if(b) openEditor(b.dataset.edit); });
+document.getElementById('logList').addEventListener('change', function(ev){
+  var t = ev.target; if(t.dataset && t.dataset.note){ var v = t.value.trim(); if(v) notes[t.dataset.note]=v; else delete notes[t.dataset.note]; saveAll(); render(); }
+});
+document.getElementById('rateInput').addEventListener('change', function(){ var v = parseFloat(this.value); rate = (isNaN(v)||v<0) ? 0 : v; saveAll(); render(); });
+document.getElementById('monthList').addEventListener('change', function(ev){
+  var t = ev.target; if(t.dataset && t.dataset.rate){ var e = employees.find(function(x){return x.id===t.dataset.rate;}); if(!e) return; var v = parseFloat(t.value); if(isNaN(v)||v<0) delete e.rate; else e.rate = v; saveAll(); render(); }
+});
 function addEmployee(){
   var input = document.getElementById('nameInput');
   var parts = input.value.split(/[,،;\n]+/).map(function(s){ return s.trim(); }).filter(function(s){ return s.length>0; });
@@ -362,12 +514,16 @@ document.getElementById('empList').addEventListener('click', function(ev){
   var btn = ev.target.closest('button');
   if(!btn) return;
   var t = new Date();
+  rollPeriod();
   if(btn.dataset.in){
-    cur.rows.push([btn.dataset.in, dayOffsetOf(t), minutesOf(t), null]);
+    if(findOpen(btn.dataset.in)){ render(); return; }
+    cur.rows.push([btn.dataset.in, dayOffsetOf(t), minutesOf(t), null, t.getTime()]);
     saveAll(); render();
   } else if(btn.dataset.out){
-    var idx = Number(btn.dataset.out);
-    if(idx>=0 && cur.rows[idx]){ cur.rows[idx][3] = minutesOf(t); saveAll(); render(); }
+    var pr = String(btn.dataset.out).split(':');
+    var bk = pr[0]==='p' ? prev : cur, ix = Number(pr[1]);
+    if(bk.rows[ix] && bk.rows[ix][3]===null){ closeRow(bk.rows[ix], t); saveAll(); render(); }
+    else render();
   } else if(btn.dataset.del){
     var id = btn.dataset.del;
     if(confirmingId !== id){
@@ -462,14 +618,15 @@ function doAuth(path){
 function pushSync(){
   if(!acct.access || !acct.uid) return;
   var ts = Math.max(load('meta.updatedAt', 0), Date.now());
-  var payload = { employees: employees, cur: cur, prev: prev, updatedAt: ts };
+  var payload = { employees: employees, cur: cur, prev: prev, notes: notes, rate: rate, updatedAt: ts };
   sFetch('/rest/v1/backups', {
     method: 'POST',
     headers: { 'Prefer': 'resolution=merge-duplicates' },
     body: JSON.stringify({ user_id: acct.uid, data: payload })
   }).then(function(){ setSyncState('اتزامن ✓'); })
-  .catch(function(){ setSyncState('هيحاول تاني'); });
+  .catch(function(){ setSyncState('هيحاول تاني'); clearTimeout(syncRetry); syncRetry = setTimeout(pushSync, 30000); });
 }
+var syncRetry = null;
 function schedulePush(){
   if(!acct.access) return;
   clearTimeout(syncTimer);
@@ -485,13 +642,16 @@ function pullSync(first){
     var remoteEmps = (row.data.employees || []).length;
     var remoteNewer = remoteU > localU || (employees.length === 0 && remoteEmps > 0);
     if(remoteNewer){
+      save('backup.local.v1', { at: Date.now(), employees: employees, cur: cur, prev: prev, notes: notes, rate: rate });
       employees = row.data.employees || [];
       cur = row.data.cur || cur;
       prev = row.data.prev || prev;
+      notes = row.data.notes || notes; rate = row.data.rate || 0;
+      rollPeriod();
       saveAll();
       render();
       setSyncState('اتزامن ✓');
-    } else if (first) { pushSync(); }
+    } else if (first || localU > remoteU) { pushSync(); }
   }).catch(function(){ setSyncState('هيحاول تاني'); });
 }
 document.getElementById('signupBtn').addEventListener('click', function(){ doAuth('/auth/v1/signup'); });
@@ -542,6 +702,9 @@ function notifApply(){
 })();
 // ===== end reminders =====
 
+setInterval(function(){ var a=document.activeElement; if(a && (a.tagName==='INPUT'||a.tagName==='TEXTAREA'||a.tagName==='SELECT')) return; if(document.getElementById('editModal').classList.contains('on')) return; render(); }, 60000);
+document.addEventListener('visibilitychange', function(){ if(!document.hidden){ render(); if(acct.access) pullSync(false); } });
+window.addEventListener('online', function(){ if(acct.access) pushSync(); });
 render();
 </script>
 </body>
