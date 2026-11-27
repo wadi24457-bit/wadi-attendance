@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!--build:15-->
+<!--build:16-->
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="utf-8">
@@ -240,7 +240,7 @@ label>.add-row input,label input#rateAll,.add-row label input{flex:none}
     <p class="hint" id="notifMsg">هيوصلك إشعار وقت الحضور ووقت الانصراف كل يوم، حتى والتطبيق مقفول.</p>
   </div>
   <div class="callout"><b>مهم تعرفه</b>الأسماء والتوقيتات بتتحفظ جوه التطبيق على موبايلك نفسه، حتى لو قفلته وفتحته تاني، ومش بتتبعت لأي حد. التطبيق بيحتفظ بشهر المرتب الحالي واللي فات (من 26 لـ 25) — انسخ ملخص الشهر قبل ما الشهرين يعدّوا لو عايز أرشيف أطول. والتطبيق بيحدّث نفسه لوحده أول ما تفتحه والنت شغال.</div>
-  <div class="foot">صُنع خصيصاً لمحمد وادي 💚</div><div class="foot" style="margin-top:4px">الإصدار 15</div><div class="foot" style="margin-top:8px"><a href="#" onclick="lockChange();return false" style="color:#047857;font-weight:700">🔒 تغيير كلمة السر</a> &nbsp;·&nbsp; <a href="#" onclick="lockNow();return false" style="color:#047857;font-weight:700">قفل التطبيق دلوقتي</a></div>
+  <div class="foot">صُنع خصيصاً لمحمد وادي 💚</div><div class="foot" style="margin-top:4px">الإصدار 16</div><div class="foot" style="margin-top:8px"><a href="#" onclick="lockChange();return false" style="color:#047857;font-weight:700">🔒 تغيير كلمة السر</a> &nbsp;·&nbsp; <a href="#" onclick="lockNow();return false" style="color:#047857;font-weight:700">قفل التطبيق دلوقتي</a></div>
 </div>
 <div class="modal" id="resetModal"><div class="modal-box">
   <b>كلمة سر جديدة</b>
@@ -289,7 +289,7 @@ function periodLabel(key){ return 'من '+dayMonthFmt.format(periodStartFromKey(
 function dayOffsetOf(d){ var s=periodStartOf(d); return Math.round((Date.UTC(d.getFullYear(),d.getMonth(),d.getDate())-Date.UTC(s.getFullYear(),s.getMonth(),s.getDate()))/86400000); }
 function emptyBucket(period){ return { period: period, rows: [] }; }
 
-var AVATARS=[['#10b981','#0d9488'],['#0ea5e9','#06b6d4'],['#f59e0b','#f97316'],['#10b981','#34d399'],['#ec4899','#f43f5e'],['#0891b2','#22d3ee'],['#14b8a6','#0ea5e9'],['#f97316','#ef4444']];
+var AVATARS=[['#34d399','#047857'],['#2dd4bf','#0f766e'],['#10b981','#065f46'],['#4ade80','#15803d'],['#14b8a6','#115e59'],['#6ee7b7','#059669']];
 function avatarFor(id){ var h=0; for(var i=0;i<id.length;i++) h=(h*31+id.charCodeAt(i))>>>0; return AVATARS[h%AVATARS.length]; }
 
 var ICONS={
