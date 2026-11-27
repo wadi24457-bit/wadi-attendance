@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!--build:16-->
+<!--build:17-->
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="utf-8">
@@ -156,6 +156,16 @@ body{background:radial-gradient(900px 500px at 50% -10%,#0c2a22 0,#060b0a 60%) f
 .rate-in{width:120px!important}
 label>.add-row input,label input#rateAll,.add-row label input{flex:none}
 .add-row label input[type=number],.add-row label input[type=text]{min-height:44px;height:44px}
+
+/* build 17: amber icon chips */
+.group-head h2 svg,.group-head h2>span>svg{background:linear-gradient(145deg,#fbbf24,#c2410c)!important;color:#fffbeb!important;box-shadow:0 4px 12px rgba(245,158,11,.35),0 1px 0 rgba(255,255,255,.4) inset,0 -2px 0 rgba(0,0,0,.25) inset!important}
+#lockScr .ic{background:linear-gradient(145deg,#fbbf24,#c2410c)!important;box-shadow:0 8px 20px rgba(245,158,11,.4),inset 0 1px 0 rgba(255,255,255,.4),inset 0 -3px 0 rgba(0,0,0,.25)!important}
+.btn svg{filter:drop-shadow(0 1px 1px rgba(0,0,0,.35))}
+.btn-del svg{color:#f59e0b}
+.btn-copy{border-color:rgba(245,158,11,.45)!important;color:#fbbf24!important}
+.btn-edit{background:rgba(245,158,11,.14)!important;color:#fbbf24!important;border-color:rgba(245,158,11,.4)!important}
+.pill{color:#fbbf24!important;background:rgba(245,158,11,.13)!important;border-color:rgba(245,158,11,.35)!important}
+.foot a{color:#fbbf24!important}
 </style>
 <meta name="theme-color" content="#060b0a">
 </head>
@@ -240,7 +250,7 @@ label>.add-row input,label input#rateAll,.add-row label input{flex:none}
     <p class="hint" id="notifMsg">هيوصلك إشعار وقت الحضور ووقت الانصراف كل يوم، حتى والتطبيق مقفول.</p>
   </div>
   <div class="callout"><b>مهم تعرفه</b>الأسماء والتوقيتات بتتحفظ جوه التطبيق على موبايلك نفسه، حتى لو قفلته وفتحته تاني، ومش بتتبعت لأي حد. التطبيق بيحتفظ بشهر المرتب الحالي واللي فات (من 26 لـ 25) — انسخ ملخص الشهر قبل ما الشهرين يعدّوا لو عايز أرشيف أطول. والتطبيق بيحدّث نفسه لوحده أول ما تفتحه والنت شغال.</div>
-  <div class="foot">صُنع خصيصاً لمحمد وادي 💚</div><div class="foot" style="margin-top:4px">الإصدار 16</div><div class="foot" style="margin-top:8px"><a href="#" onclick="lockChange();return false" style="color:#047857;font-weight:700">🔒 تغيير كلمة السر</a> &nbsp;·&nbsp; <a href="#" onclick="lockNow();return false" style="color:#047857;font-weight:700">قفل التطبيق دلوقتي</a></div>
+  <div class="foot">صُنع خصيصاً لمحمد وادي 💚</div><div class="foot" style="margin-top:4px">الإصدار 17</div><div class="foot" style="margin-top:8px"><a href="#" onclick="lockChange();return false" style="color:#047857;font-weight:700">🔒 تغيير كلمة السر</a> &nbsp;·&nbsp; <a href="#" onclick="lockNow();return false" style="color:#047857;font-weight:700">قفل التطبيق دلوقتي</a></div>
 </div>
 <div class="modal" id="resetModal"><div class="modal-box">
   <b>كلمة سر جديدة</b>
@@ -289,7 +299,7 @@ function periodLabel(key){ return 'من '+dayMonthFmt.format(periodStartFromKey(
 function dayOffsetOf(d){ var s=periodStartOf(d); return Math.round((Date.UTC(d.getFullYear(),d.getMonth(),d.getDate())-Date.UTC(s.getFullYear(),s.getMonth(),s.getDate()))/86400000); }
 function emptyBucket(period){ return { period: period, rows: [] }; }
 
-var AVATARS=[['#34d399','#047857'],['#2dd4bf','#0f766e'],['#10b981','#065f46'],['#4ade80','#15803d'],['#14b8a6','#115e59'],['#6ee7b7','#059669']];
+var AVATARS=[['#fbbf24','#d97706'],['#f59e0b','#f97316'],['#f59e0b','#b45309'],['#fb923c','#ea580c'],['#fbbf24','#f97316'],['#f59e0b','#dc2626'],['#fcd34d','#d97706'],['#f97316','#ef4444']];
 function avatarFor(id){ var h=0; for(var i=0;i<id.length;i++) h=(h*31+id.charCodeAt(i))>>>0; return AVATARS[h%AVATARS.length]; }
 
 var ICONS={
