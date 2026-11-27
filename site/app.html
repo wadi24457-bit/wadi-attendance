@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!--build:11-->
+<!--build:12-->
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="utf-8">
@@ -69,6 +69,9 @@ body {
 .dayhead{font-weight:700;font-size:14.5px;margin:14px 0 6px;color:#0b7a4b}
 .note-in{width:100%;border:1.5px solid #e2e1ea;border-radius:12px;padding:8px 12px;font:inherit;font-size:14px;background:#fafafc;min-height:40px;resize:vertical;box-sizing:border-box}
 .btn-edit{background:#e6f6ee;color:#0b7a4b;border:1px solid #a7e5c5}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#0b7a4b;color:#fff;padding:10px 18px;border-radius:999px;font-weight:700;font-size:14px;z-index:60;box-shadow:0 6px 18px rgba(0,0,0,.25);opacity:0;pointer-events:none;transition:opacity .2s}
+.toast.on{opacity:1}
+.toast.err{background:#b3261e}
 .modal{position:fixed;inset:0;background:rgba(0,0,0,.45);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
 .modal.on{display:flex}
 .modal-box{background:#fff;border-radius:18px;padding:18px;width:100%;max-width:380px;display:flex;flex-direction:column;gap:10px}
@@ -165,7 +168,7 @@ input[type="time"] { touch-action: manipulation; }
     <p class="hint" id="notifMsg">هيوصلك إشعار وقت الحضور ووقت الانصراف كل يوم، حتى والتطبيق مقفول.</p>
   </div>
   <div class="callout"><b>مهم تعرفه</b>الأسماء والتوقيتات بتتحفظ جوه التطبيق على موبايلك نفسه، حتى لو قفلته وفتحته تاني، ومش بتتبعت لأي حد. التطبيق بيحتفظ بشهر المرتب الحالي واللي فات (من 26 لـ 25) — انسخ ملخص الشهر قبل ما الشهرين يعدّوا لو عايز أرشيف أطول. والتطبيق بيحدّث نفسه لوحده أول ما تفتحه والنت شغال.</div>
-  <div class="foot">صُنع خصيصاً لمحمد وادي 💚</div><div class="foot" style="margin-top:4px">الإصدار 11</div>
+  <div class="foot">صُنع خصيصاً لمحمد وادي 💚</div><div class="foot" style="margin-top:4px">الإصدار 12</div>
 </div>
 <div class="modal" id="editModal"><div class="modal-box">
   <b id="edTitle">تعديل التسجيل</b>
@@ -497,15 +500,17 @@ document.getElementById('rateInput').addEventListener('change', function(){ var 
 document.getElementById('monthList').addEventListener('change', function(ev){
   var t = ev.target; if(t.dataset && t.dataset.rate){ var e = employees.find(function(x){return x.id===t.dataset.rate;}); if(!e) return; var v = parseFloat(t.value); if(isNaN(v)||v<0) delete e.rate; else e.rate = v; saveAll(); render(); }
 });
+var toastTimer=null;
+function toast(t, err){ var el=document.getElementById('toast'); if(!el){ el=document.createElement('div'); el.id='toast'; el.className='toast'; document.body.appendChild(el); } el.textContent=t; el.className='toast on'+(err?' err':''); clearTimeout(toastTimer); toastTimer=setTimeout(function(){ el.className='toast'; },2200); }
 function addEmployee(){
   var input = document.getElementById('nameInput');
   var parts = input.value.split(/[,،;\n]+/).map(function(s){ return s.trim(); }).filter(function(s){ return s.length>0; });
-  if(parts.length===0) return;
+  if(parts.length===0){ toast('اكتب اسم الموظف الأول وبعدين دوس أضف', true); input.focus(); return; }
   parts.forEach(function(name){
     employees.push({ id:'e'+(Date.now()%1000000).toString(36)+Math.floor(Math.random()*1296).toString(36), name:name });
   });
   input.value = '';
-  saveAll(); render(); input.focus();
+  saveAll(); render(); input.focus(); toast('اتضاف '+parts.length+' موظف ✓');
 }
 document.getElementById('addBtn').addEventListener('click', addEmployee);
 document.getElementById('nameInput').addEventListener('keydown', function(e){ if(e.key==='Enter') addEmployee(); });
@@ -518,11 +523,11 @@ document.getElementById('empList').addEventListener('click', function(ev){
   if(btn.dataset.in){
     if(findOpen(btn.dataset.in)){ render(); return; }
     cur.rows.push([btn.dataset.in, dayOffsetOf(t), minutesOf(t), null, t.getTime()]);
-    saveAll(); render();
+    saveAll(); render(); toast('اتسجل الحضور '+fmtTime(minutesOf(t))+' ✓');
   } else if(btn.dataset.out){
     var pr = String(btn.dataset.out).split(':');
     var bk = pr[0]==='p' ? prev : cur, ix = Number(pr[1]);
-    if(bk.rows[ix] && bk.rows[ix][3]===null){ closeRow(bk.rows[ix], t); saveAll(); render(); }
+    if(bk.rows[ix] && bk.rows[ix][3]===null){ closeRow(bk.rows[ix], t); saveAll(); render(); toast('اتسجل الانصراف ✓'); }
     else render();
   } else if(btn.dataset.del){
     var id = btn.dataset.del;
