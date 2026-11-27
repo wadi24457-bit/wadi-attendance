@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!--build:14-->
+<!--build:15-->
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="utf-8">
@@ -107,8 +107,57 @@ input[type="time"] { touch-action: manipulation; }
 #lockScr input{width:100%;padding:12px;border:1.5px solid #d1d5db;border-radius:12px;font-size:17px;margin-bottom:10px;text-align:center;direction:ltr}
 #lockScr button{width:100%;padding:12px;border:0;border-radius:12px;background:#059669;color:#fff;font-size:16px;font-weight:700;margin-top:2px}
 #lockScr button.sec{background:#ecfdf5;color:#065f46;margin-top:8px;font-weight:600;font-size:14px}
-#lockScr .er{color:#b3261e;font-size:13px;min-height:18px;margin:0 0 6px}
+#lockScr .er{color:#fca5a5;font-size:13px;min-height:18px;margin:0 0 6px}
 </style>
+<style>
+/* build 15: deep dark professional theme */
+:root{--bg:#060b0a;--card:#0f1715;--card2:#14201d;--line:#1f302b;--tx:#e8f3ef;--mut:#8aa39b;--em:#10b981;--em2:#34d399}
+body{background:radial-gradient(900px 500px at 50% -10%,#0c2a22 0,#060b0a 60%) fixed,#060b0a;color:var(--tx)}
+.hero{background:linear-gradient(135deg,#064e3b 0,#047857 55%,#0d9488 100%);border:1px solid rgba(52,211,153,.25);border-radius:20px;padding:16px 18px;box-shadow:0 10px 30px rgba(0,0,0,.55),inset 0 1px 0 rgba(255,255,255,.18)}
+.hero h1{font-size:18px}.hero .intro{opacity:.9}
+.group{background:linear-gradient(180deg,var(--card2),var(--card));border:1px solid var(--line);border-radius:20px;box-shadow:0 8px 24px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,255,255,.04)}
+.group-head h2 svg,.group-head h2>span>svg{box-sizing:content-box;padding:8px;border-radius:12px;color:#ecfdf5;background:linear-gradient(145deg,#34d399,#047857);box-shadow:0 4px 10px rgba(16,185,129,.35),0 1px 0 rgba(255,255,255,.35) inset,0 -2px 0 rgba(0,0,0,.25) inset;width:20px;height:20px}
+.pill{color:#6ee7b7;background:rgba(16,185,129,.14);border:1px solid rgba(52,211,153,.3)}
+.hint{color:var(--mut)}
+.add-row input,.rate-in,.note-in,.modal-box input,.modal-box select,input[type=time],input[type=date],input[type=email],input[type=password],input[type=text],select,textarea{background:#0a1210;color:var(--tx);border:1.5px solid var(--line);color-scheme:dark}
+.add-row input:focus,.note-in:focus{border-color:var(--em);background:#0c1613;box-shadow:0 0 0 3px rgba(16,185,129,.18)}
+::placeholder{color:#58716a}
+.row{border-bottom:1px solid var(--line)}
+.avatar{box-shadow:0 4px 10px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,255,255,.35),inset 0 -3px 0 rgba(0,0,0,.2)}
+.badge{color:var(--mut);background:#16221f;border:1px solid var(--line)}
+.badge-in{background:rgba(16,185,129,.15);color:#6ee7b7;border-color:rgba(52,211,153,.35)}
+.badge-in::before{background:#34d399;box-shadow:0 0 8px #34d399}
+.badge-done{background:rgba(20,184,166,.14);color:#5eead4;border-color:rgba(45,212,191,.3)}
+.chip{color:#5eead4;background:rgba(20,184,166,.14);border:1px solid rgba(45,212,191,.3)}
+.btn-in{background:linear-gradient(145deg,#34d399,#059669);box-shadow:0 5px 14px rgba(16,185,129,.35),inset 0 1px 0 rgba(255,255,255,.35),inset 0 -2px 0 rgba(0,0,0,.2)}
+.btn-out{background:linear-gradient(145deg,#fbbf24,#d97706);color:#2a1700;border:none;box-shadow:0 5px 14px rgba(245,158,11,.3),inset 0 1px 0 rgba(255,255,255,.4),inset 0 -2px 0 rgba(0,0,0,.2)}
+.btn-del{background:#121c19;color:var(--mut);border:1px solid var(--line)}
+.btn-del-confirm{background:rgba(239,68,68,.15);color:#fca5a5;border:1px solid rgba(239,68,68,.4)}
+.btn-add{background:linear-gradient(145deg,#34d399,#059669);box-shadow:0 5px 14px rgba(16,185,129,.35),inset 0 1px 0 rgba(255,255,255,.35),inset 0 -2px 0 rgba(0,0,0,.2)}
+.btn-copy{background:#0d1a16;color:#6ee7b7;border:1.5px solid rgba(52,211,153,.4)}
+.btn-copy.done{background:rgba(16,185,129,.2);color:#a7f3d0}
+.btn-edit{background:rgba(16,185,129,.14);color:#6ee7b7;border:1px solid rgba(52,211,153,.35)}
+.hours{background:linear-gradient(135deg,#6ee7b7,#2dd4bf);-webkit-background-clip:text;background-clip:text;color:transparent}
+.pay{color:#6ee7b7}.dayhead{color:#6ee7b7}
+.tot{background:linear-gradient(135deg,rgba(16,185,129,.2),rgba(20,184,166,.12));color:#a7f3d0;border:1px solid rgba(52,211,153,.3)}
+.callout{background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.28);color:#e7c77e}.callout b{color:#fbbf24}
+.foot{color:#5f7a72}.foot a{color:#6ee7b7!important}
+.modal{background:rgba(0,0,0,.7)}
+.modal-box{background:linear-gradient(180deg,var(--card2),var(--card));border:1px solid var(--line);color:var(--tx);box-shadow:0 20px 50px rgba(0,0,0,.7)}
+.toast{background:#047857;border:1px solid #34d399}
+#lockScr{background:radial-gradient(700px 500px at 50% 0,#0b3a2e,#060b0a 70%)}
+#lockScr .lk{background:linear-gradient(180deg,var(--card2),var(--card));border:1px solid var(--line);box-shadow:0 20px 50px rgba(0,0,0,.7)}
+#lockScr .ic{width:64px;height:64px;margin:0 auto 10px;display:flex;align-items:center;justify-content:center;font-size:30px;border-radius:20px;background:linear-gradient(145deg,#34d399,#047857);box-shadow:0 8px 20px rgba(16,185,129,.4),inset 0 1px 0 rgba(255,255,255,.4),inset 0 -3px 0 rgba(0,0,0,.25)}
+#lockScr h2{color:#d1fae5}#lockScr p{color:var(--mut)}
+#lockScr input{background:#0a1210;color:var(--tx);border-color:var(--line)}
+#lockScr button{background:linear-gradient(145deg,#34d399,#059669);box-shadow:0 5px 14px rgba(16,185,129,.35)}
+#lockScr button.sec{background:#121c19;color:#6ee7b7;box-shadow:none}
+#lockScr .er{color:#fca5a5}
+.rate-in{width:120px!important}
+label>.add-row input,label input#rateAll,.add-row label input{flex:none}
+.add-row label input[type=number],.add-row label input[type=text]{min-height:44px;height:44px}
+</style>
+<meta name="theme-color" content="#060b0a">
 </head>
 <body>
 <div id="lockScr"><div class="lk">
@@ -191,7 +240,7 @@ input[type="time"] { touch-action: manipulation; }
     <p class="hint" id="notifMsg">هيوصلك إشعار وقت الحضور ووقت الانصراف كل يوم، حتى والتطبيق مقفول.</p>
   </div>
   <div class="callout"><b>مهم تعرفه</b>الأسماء والتوقيتات بتتحفظ جوه التطبيق على موبايلك نفسه، حتى لو قفلته وفتحته تاني، ومش بتتبعت لأي حد. التطبيق بيحتفظ بشهر المرتب الحالي واللي فات (من 26 لـ 25) — انسخ ملخص الشهر قبل ما الشهرين يعدّوا لو عايز أرشيف أطول. والتطبيق بيحدّث نفسه لوحده أول ما تفتحه والنت شغال.</div>
-  <div class="foot">صُنع خصيصاً لمحمد وادي 💚</div><div class="foot" style="margin-top:4px">الإصدار 14</div><div class="foot" style="margin-top:8px"><a href="#" onclick="lockChange();return false" style="color:#047857;font-weight:700">🔒 تغيير كلمة السر</a> &nbsp;·&nbsp; <a href="#" onclick="lockNow();return false" style="color:#047857;font-weight:700">قفل التطبيق دلوقتي</a></div>
+  <div class="foot">صُنع خصيصاً لمحمد وادي 💚</div><div class="foot" style="margin-top:4px">الإصدار 15</div><div class="foot" style="margin-top:8px"><a href="#" onclick="lockChange();return false" style="color:#047857;font-weight:700">🔒 تغيير كلمة السر</a> &nbsp;·&nbsp; <a href="#" onclick="lockNow();return false" style="color:#047857;font-weight:700">قفل التطبيق دلوقتي</a></div>
 </div>
 <div class="modal" id="resetModal"><div class="modal-box">
   <b>كلمة سر جديدة</b>
@@ -205,7 +254,7 @@ input[type="time"] { touch-action: manipulation; }
   <label>التاريخ<input type="date" id="edDate"></label>
   <label>وقت الحضور<input type="time" id="edIn"></label>
   <label>وقت الانصراف (سيبه فاضي لو لسه شغال)<input type="time" id="edOut"></label>
-  <p class="hint" id="edMsg" style="color:#b3261e;margin:0"></p>
+  <p class="hint" id="edMsg" style="color:#fca5a5;margin:0"></p>
   <div style="display:flex;gap:8px"><button class="btn btn-in" id="edSave" style="flex:1;justify-content:center">حفظ</button><button class="btn btn-del" id="edDel">مسح التسجيل</button><button class="btn btn-del" id="edCancel">إلغاء</button></div>
 </div></div>
 <script>
@@ -240,7 +289,7 @@ function periodLabel(key){ return 'من '+dayMonthFmt.format(periodStartFromKey(
 function dayOffsetOf(d){ var s=periodStartOf(d); return Math.round((Date.UTC(d.getFullYear(),d.getMonth(),d.getDate())-Date.UTC(s.getFullYear(),s.getMonth(),s.getDate()))/86400000); }
 function emptyBucket(period){ return { period: period, rows: [] }; }
 
-var AVATARS=[['#6366f1','#8b5cf6'],['#0ea5e9','#06b6d4'],['#f59e0b','#f97316'],['#10b981','#34d399'],['#ec4899','#f43f5e'],['#8b5cf6','#d946ef'],['#14b8a6','#0ea5e9'],['#f97316','#ef4444']];
+var AVATARS=[['#10b981','#0d9488'],['#0ea5e9','#06b6d4'],['#f59e0b','#f97316'],['#10b981','#34d399'],['#ec4899','#f43f5e'],['#0891b2','#22d3ee'],['#14b8a6','#0ea5e9'],['#f97316','#ef4444']];
 function avatarFor(id){ var h=0; for(var i=0;i<id.length;i++) h=(h*31+id.charCodeAt(i))>>>0; return AVATARS[h%AVATARS.length]; }
 
 var ICONS={
@@ -589,7 +638,7 @@ var SUPA_KEY = "sb_publishable_FFZ1QKj9_XsGle9grvwZdg_mryzMrSZ";
 var acct = { email: load('acct.email', null), access: load('acct.access', null), refresh: load('acct.refresh', null), uid: load('acct.uid', null) };
 var syncTimer = null;
 function setSyncState(t){ var el = document.getElementById('syncState'); if(el) el.textContent = t; }
-function acctSay(t, err){ var el = document.getElementById('acctMsg'); if(el){ el.textContent = t; el.style.color = err ? '#b3261e' : '#6b6a75'; } }
+function acctSay(t, err){ var el = document.getElementById('acctMsg'); if(el){ el.textContent = t; el.style.color = err ? '#fca5a5' : '#8aa39b'; } }
 function showAcct(){
   var inEl = document.getElementById('acctIn'), outEl = document.getElementById('acctOut');
   if(!inEl || !outEl) return;
@@ -709,12 +758,12 @@ document.getElementById('forgotBtn').addEventListener('click', function(){
   document.getElementById('resetModal').classList.add('on');
   document.getElementById('resetSave').addEventListener('click', function(){
     var pw = document.getElementById('newPass').value, msg = document.getElementById('resetMsg');
-    if(pw.length < 6){ msg.textContent = 'كلمة السر ٦ حروف على الأقل'; msg.style.color = '#b3261e'; return; }
-    msg.textContent = 'ثانية...'; msg.style.color = '#6b6a75';
+    if(pw.length < 6){ msg.textContent = 'كلمة السر ٦ حروف على الأقل'; msg.style.color = '#fca5a5'; return; }
+    msg.textContent = 'ثانية...'; msg.style.color = '#8aa39b';
     fetch(SUPA_URL + '/auth/v1/user', { method: 'PUT', headers: { 'apikey': SUPA_KEY, 'Authorization': 'Bearer ' + tok, 'Content-Type': 'application/json' }, body: JSON.stringify({ password: pw }) })
     .then(function(r){ return r.json().catch(function(){ return {}; }).then(function(j){ if(!r.ok) throw new Error(j.msg || j.message || ('خطأ ' + r.status)); return j; }); })
-    .then(function(){ msg.style.color = '#0b7a4b'; msg.textContent = 'تمام ✓ كلمة السر اتغيرت. ارجع لتطبيق الحضور وسجّل دخول بيها.'; document.getElementById('resetSave').style.display = 'none'; document.getElementById('newPass').value = ''; })
-    .catch(function(e){ msg.style.color = '#b3261e'; msg.textContent = (e.message === 'Failed to fetch') ? 'مفيش نت' : (e.message + ' - اطلب لينك جديد من نسيت كلمة السر'); });
+    .then(function(){ msg.style.color = '#6ee7b7'; msg.textContent = 'تمام ✓ كلمة السر اتغيرت. ارجع لتطبيق الحضور وسجّل دخول بيها.'; document.getElementById('resetSave').style.display = 'none'; document.getElementById('newPass').value = ''; })
+    .catch(function(e){ msg.style.color = '#fca5a5'; msg.textContent = (e.message === 'Failed to fetch') ? 'مفيش نت' : (e.message + ' - اطلب لينك جديد من نسيت كلمة السر'); });
   });
 })();
 document.getElementById('signupBtn').addEventListener('click', function(){ doAuth('/auth/v1/signup'); });
