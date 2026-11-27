@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!--build:12-->
+<!--build:14-->
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="utf-8">
@@ -97,8 +97,30 @@ input[type="checkbox"] { transform: scale(1.1); }
 input[type="time"] { touch-action: manipulation; }
 .pill { transition: background .12s ease; }
 </style>
+<style>
+#lockScr{position:fixed;inset:0;z-index:99999;background:linear-gradient(160deg,#064e3b,#047857 60%,#10b981);display:none;align-items:center;justify-content:center;padding:20px}
+#lockScr.on{display:flex}
+#lockScr .lk{background:#fff;border-radius:22px;padding:26px 22px;width:100%;max-width:340px;text-align:center;box-shadow:0 12px 40px rgba(0,0,0,.3)}
+#lockScr .ic{font-size:40px;margin-bottom:6px}
+#lockScr h2{margin:0 0 4px;font-size:19px;color:#065f46}
+#lockScr p{margin:0 0 14px;font-size:13px;color:#555;line-height:1.6}
+#lockScr input{width:100%;padding:12px;border:1.5px solid #d1d5db;border-radius:12px;font-size:17px;margin-bottom:10px;text-align:center;direction:ltr}
+#lockScr button{width:100%;padding:12px;border:0;border-radius:12px;background:#059669;color:#fff;font-size:16px;font-weight:700;margin-top:2px}
+#lockScr button.sec{background:#ecfdf5;color:#065f46;margin-top:8px;font-weight:600;font-size:14px}
+#lockScr .er{color:#b3261e;font-size:13px;min-height:18px;margin:0 0 6px}
+</style>
 </head>
 <body>
+<div id="lockScr"><div class="lk">
+  <div class="ic">🔒</div>
+  <h2 id="lkT"></h2><p id="lkP"></p>
+  <input type="password" id="lkOld" placeholder="كلمة السر الحالية" autocomplete="off" style="display:none">
+  <input type="password" id="lkA" autocomplete="off">
+  <input type="password" id="lkB" placeholder="اكتبها تاني للتأكيد" autocomplete="off" style="display:none">
+  <p class="er" id="lkE"></p>
+  <button id="lkGo"></button>
+  <button class="sec" id="lkCancel" style="display:none">إلغاء</button>
+</div></div>
 <div class="card">
   <div class="hero">
     <h1>حضور وانصراف الموظفين</h1>
@@ -147,6 +169,7 @@ input[type="time"] { touch-action: manipulation; }
         <button class="btn btn-add" id="signupBtn" style="flex:1">إنشاء حساب</button>
         <button class="btn btn-copy" id="loginBtn" style="flex:1;margin-top:0;width:auto">تسجيل دخول</button>
       </div>
+      <button class="btn btn-del" id="forgotBtn" style="margin-top:8px">نسيت كلمة السر؟</button>
       <p class="hint" id="acctMsg"></p>
     </div>
     <div id="acctIn" style="display:none">
@@ -168,8 +191,14 @@ input[type="time"] { touch-action: manipulation; }
     <p class="hint" id="notifMsg">هيوصلك إشعار وقت الحضور ووقت الانصراف كل يوم، حتى والتطبيق مقفول.</p>
   </div>
   <div class="callout"><b>مهم تعرفه</b>الأسماء والتوقيتات بتتحفظ جوه التطبيق على موبايلك نفسه، حتى لو قفلته وفتحته تاني، ومش بتتبعت لأي حد. التطبيق بيحتفظ بشهر المرتب الحالي واللي فات (من 26 لـ 25) — انسخ ملخص الشهر قبل ما الشهرين يعدّوا لو عايز أرشيف أطول. والتطبيق بيحدّث نفسه لوحده أول ما تفتحه والنت شغال.</div>
-  <div class="foot">صُنع خصيصاً لمحمد وادي 💚</div><div class="foot" style="margin-top:4px">الإصدار 12</div>
+  <div class="foot">صُنع خصيصاً لمحمد وادي 💚</div><div class="foot" style="margin-top:4px">الإصدار 14</div><div class="foot" style="margin-top:8px"><a href="#" onclick="lockChange();return false" style="color:#047857;font-weight:700">🔒 تغيير كلمة السر</a> &nbsp;·&nbsp; <a href="#" onclick="lockNow();return false" style="color:#047857;font-weight:700">قفل التطبيق دلوقتي</a></div>
 </div>
+<div class="modal" id="resetModal"><div class="modal-box">
+  <b>كلمة سر جديدة</b>
+  <label>اكتب كلمة السر الجديدة (٦ حروف على الأقل)<input type="password" id="newPass" autocomplete="new-password"></label>
+  <p class="hint" id="resetMsg" style="margin:0"></p>
+  <button class="btn btn-in" id="resetSave" style="justify-content:center">حفظ كلمة السر</button>
+</div></div>
 <div class="modal" id="editModal"><div class="modal-box">
   <b id="edTitle">تعديل التسجيل</b>
   <label>الموظف<select id="edEmp"></select></label>
@@ -659,6 +688,35 @@ function pullSync(first){
     } else if (first || localU > remoteU) { pushSync(); }
   }).catch(function(){ setSyncState('هيحاول تاني'); });
 }
+document.getElementById('forgotBtn').addEventListener('click', function(){
+  var email = document.getElementById('emailInput').value.trim();
+  if(!email || email.indexOf('@') < 0){ acctSay('اكتب إيميلك في الخانة الأول وبعدين دوس نسيت كلمة السر', true); return; }
+  acctSay('ثانية...');
+  fetch(SUPA_URL + '/auth/v1/recover?redirect_to=' + encodeURIComponent('https://wadi-attendance.surge.sh/app.html'), {
+    method: 'POST', headers: { 'apikey': SUPA_KEY, 'Content-Type': 'application/json' }, body: JSON.stringify({ email: email })
+  }).then(function(r){ return r.json().catch(function(){ return {}; }).then(function(j){ return { ok: r.ok, j: j }; }); })
+  .then(function(x){
+    if(x.ok) acctSay('لو الإيميل ده مسجل هيوصلك لينك لتغيير كلمة السر - راجع الوارد والسبام (ممكن ياخد دقيقة)');
+    else acctSay((x.j && (x.j.msg || x.j.message || x.j.error_description)) ? (x.j.msg || x.j.message || x.j.error_description) : 'مقدرناش نبعت الإيميل دلوقتي - جرب بعد شوية', true);
+  }).catch(function(){ acctSay('مفيش نت - جرب تاني لما النت يشتغل', true); });
+});
+(function(){
+  var h = location.hash || '';
+  if(h.indexOf('type=recovery') < 0 || h.indexOf('access_token=') < 0) return;
+  var q = {}; h.replace(/^#/, '').split('&').forEach(function(kv){ var i = kv.indexOf('='); if(i>0) q[kv.slice(0,i)] = decodeURIComponent(kv.slice(i+1)); });
+  var tok = q.access_token, rtok = q.refresh_token;
+  try { history.replaceState(null, '', location.pathname + location.search); } catch(e){}
+  document.getElementById('resetModal').classList.add('on');
+  document.getElementById('resetSave').addEventListener('click', function(){
+    var pw = document.getElementById('newPass').value, msg = document.getElementById('resetMsg');
+    if(pw.length < 6){ msg.textContent = 'كلمة السر ٦ حروف على الأقل'; msg.style.color = '#b3261e'; return; }
+    msg.textContent = 'ثانية...'; msg.style.color = '#6b6a75';
+    fetch(SUPA_URL + '/auth/v1/user', { method: 'PUT', headers: { 'apikey': SUPA_KEY, 'Authorization': 'Bearer ' + tok, 'Content-Type': 'application/json' }, body: JSON.stringify({ password: pw }) })
+    .then(function(r){ return r.json().catch(function(){ return {}; }).then(function(j){ if(!r.ok) throw new Error(j.msg || j.message || ('خطأ ' + r.status)); return j; }); })
+    .then(function(){ msg.style.color = '#0b7a4b'; msg.textContent = 'تمام ✓ كلمة السر اتغيرت. ارجع لتطبيق الحضور وسجّل دخول بيها.'; document.getElementById('resetSave').style.display = 'none'; document.getElementById('newPass').value = ''; })
+    .catch(function(e){ msg.style.color = '#b3261e'; msg.textContent = (e.message === 'Failed to fetch') ? 'مفيش نت' : (e.message + ' - اطلب لينك جديد من نسيت كلمة السر'); });
+  });
+})();
 document.getElementById('signupBtn').addEventListener('click', function(){ doAuth('/auth/v1/signup'); });
 document.getElementById('loginBtn').addEventListener('click', function(){ doAuth('/auth/v1/token?grant_type=password'); });
 document.getElementById('logoutBtn').addEventListener('click', function(){
@@ -711,6 +769,65 @@ setInterval(function(){ var a=document.activeElement; if(a && (a.tagName==='INPU
 document.addEventListener('visibilitychange', function(){ if(!document.hidden){ render(); if(acct.access) pullSync(false); } });
 window.addEventListener('online', function(){ if(acct.access) pushSync(); });
 render();
+</script>
+<script>
+(function(){
+var KEY='lock.v1', scr=document.getElementById('lockScr');
+var T=document.getElementById('lkT'),P=document.getElementById('lkP'),O=document.getElementById('lkOld'),A=document.getElementById('lkA'),B=document.getElementById('lkB'),E=document.getElementById('lkE'),G=document.getElementById('lkGo'),C=document.getElementById('lkCancel');
+var mode='unlock', hiddenAt=0, tries=0;
+function hex(buf){ return Array.prototype.map.call(new Uint8Array(buf),function(b){return ('0'+b.toString(16)).slice(-2);}).join(''); }
+function fb(s){ var h=5381,i,r=''; for(var k=0;k<4;k++){ for(i=0;i<s.length;i++){ h=((h<<5)+h+s.charCodeAt(i)+k)|0; } r+=(h>>>0).toString(16); } return r; }
+function hash(pw,salt){
+  var subtle=window.crypto&&crypto.subtle;
+  if(!subtle) return Promise.resolve('f:'+fb(salt+pw));
+  var enc=new TextEncoder();
+  return subtle.importKey('raw',enc.encode(pw),'PBKDF2',false,['deriveBits']).then(function(k){
+    return subtle.deriveBits({name:'PBKDF2',salt:enc.encode(salt),iterations:100000,hash:'SHA-256'},k,256);
+  }).then(hex);
+}
+function load(){ try{ return JSON.parse(localStorage.getItem(KEY)); }catch(e){ return null; } }
+function rnd(){ var a=new Uint8Array(16); (window.crypto||{getRandomValues:function(x){for(var i=0;i<x.length;i++)x[i]=Math.floor(Math.random()*256);}}).getRandomValues(a); return hex(a); }
+function check(pw){ var l=load(); return hash(pw,l.s).then(function(h){ return h===l.h; }); }
+function show(m){
+  mode=m; E.textContent=''; O.value=A.value=B.value=''; 
+  O.style.display=m==='change'?'':'none'; B.style.display=(m==='setup'||m==='change')?'':'none'; C.style.display=m==='change'?'':'none';
+  if(m==='unlock'){ T.textContent='التطبيق مقفول'; P.textContent='اكتب كلمة السر عشان تفتح'; A.placeholder='كلمة السر'; G.textContent='فتح'; }
+  else if(m==='setup'){ T.textContent='اعمل كلمة سر للتطبيق'; P.textContent='اختار كلمة سر (٤ حروف على الأقل). بتتحفظ على موبايلك بس، ومحدش يقدر يشوفها. لو نسيتها مفيش طريقة نرجعها، فاكتبها في مكان آمن.'; A.placeholder='كلمة السر الجديدة'; G.textContent='حفظ وفتح'; }
+  else { T.textContent='تغيير كلمة السر'; P.textContent='اكتب الحالية وبعدين الجديدة'; A.placeholder='كلمة السر الجديدة'; G.textContent='تغيير'; }
+  scr.classList.add('on'); setTimeout(function(){ (m==='change'?O:A).focus(); },50);
+}
+function hide(){ scr.classList.remove('on'); O.value=A.value=B.value=''; E.textContent=''; }
+function err(t){ E.textContent=t; }
+function save(pw){ var s=rnd(); return hash(pw,s).then(function(h){ localStorage.setItem(KEY,JSON.stringify({s:s,h:h})); }); }
+G.onclick=function(){
+  if(mode==='unlock'){
+    if(!A.value) return err('اكتب كلمة السر');
+    check(A.value).then(function(ok){ if(ok){ tries=0; hide(); } else { tries++; A.value=''; err('كلمة السر غلط'+(tries>=3?' (جرب تاني براحة)':'')); } });
+  } else if(mode==='setup'){
+    if(A.value.length<4) return err('كلمة السر لازم ٤ حروف على الأقل');
+    if(A.value!==B.value) return err('الكلمتين مش زي بعض');
+    save(A.value).then(hide).catch(function(e){ err('حصل خطأ: '+e); });
+  } else {
+    if(!O.value) return err('اكتب كلمة السر الحالية');
+    check(O.value).then(function(ok){
+      if(!ok){ O.value=''; return err('كلمة السر الحالية غلط'); }
+      if(A.value.length<4) return err('الجديدة لازم ٤ حروف على الأقل');
+      if(A.value!==B.value) return err('الكلمتين مش زي بعض');
+      save(A.value).then(function(){ hide(); if(window.toast) toast('اتغيرت كلمة السر ✓'); });
+    });
+  }
+};
+[O,A,B].forEach(function(i){ i.addEventListener('keydown',function(e){ if(e.key==='Enter') G.onclick(); }); });
+C.onclick=hide;
+window.lockChange=function(){ if(load()) show('change'); };
+window.lockNow=function(){ if(load()) show('unlock'); };
+document.addEventListener('visibilitychange',function(){
+  if(document.hidden){ hiddenAt=Date.now(); }
+  else if(load() && hiddenAt && Date.now()-hiddenAt>60000 && !scr.classList.contains('on')){ show('unlock'); }
+});
+show(load()?'unlock':'setup');
+var f=document.getElementById('lockLinks'); 
+})();
 </script>
 </body>
 </html>
