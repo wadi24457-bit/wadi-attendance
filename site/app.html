@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!--build:17-->
+<!--build:18-->
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="utf-8">
@@ -233,6 +233,7 @@ label>.add-row input,label input#rateAll,.add-row label input{flex:none}
     </div>
     <div id="acctIn" style="display:none">
       <p class="hint" id="acctWho"></p>
+      <button class="btn btn-copy" id="restoreBtn" style="margin-bottom:8px">استرجاع بيانات الموبايل قبل آخر مزامنة</button>
       <button class="btn btn-copy" id="logoutBtn">تسجيل خروج (البيانات هتفضل على الموبايل)</button>
     </div>
   </div>
@@ -250,7 +251,7 @@ label>.add-row input,label input#rateAll,.add-row label input{flex:none}
     <p class="hint" id="notifMsg">هيوصلك إشعار وقت الحضور ووقت الانصراف كل يوم، حتى والتطبيق مقفول.</p>
   </div>
   <div class="callout"><b>مهم تعرفه</b>الأسماء والتوقيتات بتتحفظ جوه التطبيق على موبايلك نفسه، حتى لو قفلته وفتحته تاني، ومش بتتبعت لأي حد. التطبيق بيحتفظ بشهر المرتب الحالي واللي فات (من 26 لـ 25) — انسخ ملخص الشهر قبل ما الشهرين يعدّوا لو عايز أرشيف أطول. والتطبيق بيحدّث نفسه لوحده أول ما تفتحه والنت شغال.</div>
-  <div class="foot">صُنع خصيصاً لمحمد وادي 💚</div><div class="foot" style="margin-top:4px">الإصدار 17</div><div class="foot" style="margin-top:8px"><a href="#" onclick="lockChange();return false" style="color:#047857;font-weight:700">🔒 تغيير كلمة السر</a> &nbsp;·&nbsp; <a href="#" onclick="lockNow();return false" style="color:#047857;font-weight:700">قفل التطبيق دلوقتي</a></div>
+  <div class="foot">صُنع خصيصاً لمحمد وادي 💚</div><div class="foot" style="margin-top:4px">الإصدار 18</div><div class="foot" style="margin-top:8px"><a href="#" onclick="lockChange();return false" style="color:#047857;font-weight:700">🔒 تغيير كلمة السر</a> &nbsp;·&nbsp; <a href="#" onclick="lockNow();return false" style="color:#047857;font-weight:700">قفل التطبيق دلوقتي</a></div>
 </div>
 <div class="modal" id="resetModal"><div class="modal-box">
   <b>كلمة سر جديدة</b>
@@ -725,6 +726,34 @@ function schedulePush(){
   clearTimeout(syncTimer);
   syncTimer = setTimeout(pushSync, 2500);
 }
+
+// build 18: never overwrite local data. Pull = MERGE (union), and a local snapshot is kept before every merge.
+function snapLocal(){
+  var h = load('backup.hist.v1', []);
+  h.push({ at: Date.now(), employees: employees, cur: cur, prev: prev, notes: notes, rate: rate });
+  while(h.length > 6) h.shift();
+  save('backup.hist.v1', h);
+}
+function mergeRows(a, b){
+  var seen = {}, out = [];
+  (a || []).concat(b || []).forEach(function(r){ var k = JSON.stringify(r); if(!seen[k]){ seen[k] = 1; out.push(r); } });
+  return out;
+}
+function mergeBucket(local, remote){
+  if(!remote || !remote.rows) return local;
+  if(local.period === remote.period) return { rows: mergeRows(local.rows, remote.rows), period: local.period };
+  return local;
+}
+function mergeIn(d){
+  var ids = {}; employees.forEach(function(e){ ids[e.id] = 1; });
+  (d.employees || []).forEach(function(e){ if(!ids[e.id]) employees.push(e); });
+  cur = mergeBucket(cur, d.cur);
+  prev = mergeBucket(prev, d.prev);
+  if(d.cur && d.cur.period === prev.period) prev = mergeBucket(prev, d.cur);
+  if(d.prev && d.prev.period === cur.period) cur = mergeBucket(cur, d.prev);
+  if(d.notes && typeof d.notes === 'object'){ var n = {}; Object.keys(d.notes).forEach(function(k){ n[k] = d.notes[k]; }); Object.keys(notes).forEach(function(k){ n[k] = notes[k]; }); notes = n; }
+  if(!rate && d.rate) rate = d.rate;
+}
 function pullSync(first){
   if(!acct.access) return;
   sFetch('/rest/v1/backups?select=data', { method: 'GET' }).then(function(rows){
@@ -735,11 +764,8 @@ function pullSync(first){
     var remoteEmps = (row.data.employees || []).length;
     var remoteNewer = remoteU > localU || (employees.length === 0 && remoteEmps > 0);
     if(remoteNewer){
-      save('backup.local.v1', { at: Date.now(), employees: employees, cur: cur, prev: prev, notes: notes, rate: rate });
-      employees = row.data.employees || [];
-      cur = row.data.cur || cur;
-      prev = row.data.prev || prev;
-      notes = row.data.notes || notes; rate = row.data.rate || 0;
+      snapLocal();
+      mergeIn({ employees: row.data.employees, cur: row.data.cur, prev: row.data.prev, notes: row.data.notes, rate: row.data.rate });
       rollPeriod();
       saveAll();
       render();
@@ -776,6 +802,16 @@ document.getElementById('forgotBtn').addEventListener('click', function(){
     .catch(function(e){ msg.style.color = '#fca5a5'; msg.textContent = (e.message === 'Failed to fetch') ? 'مفيش نت' : (e.message + ' - اطلب لينك جديد من نسيت كلمة السر'); });
   });
 })();
+
+document.getElementById('restoreBtn').addEventListener('click', function(){
+  var hs = [], h = load('backup.hist.v1', []), old = load('backup.local.v1', null);
+  hs = h.slice(); if(old) hs.push(old);
+  if(!hs.length){ toast('مفيش نسخة قديمة متخزنة على الموبايل ده', true); return; }
+  snapLocal();
+  hs.forEach(function(d){ mergeIn(d); });
+  rollPeriod(); saveAll(); render();
+  toast('اتسترجعت البيانات القديمة (' + hs.length + ' نسخة) ✓');
+});
 document.getElementById('signupBtn').addEventListener('click', function(){ doAuth('/auth/v1/signup'); });
 document.getElementById('loginBtn').addEventListener('click', function(){ doAuth('/auth/v1/token?grant_type=password'); });
 document.getElementById('logoutBtn').addEventListener('click', function(){
